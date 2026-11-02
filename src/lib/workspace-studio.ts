@@ -78,6 +78,11 @@ export function readPublishedStudio(publicProfile: unknown): WorkspaceStudioPayl
   if (!isRecord(publicProfile) || publicProfile["published"] !== true) return null;
   const studio = publicProfile["studio"];
   if (!isRecord(studio)) return null;
+  // Alleen geldige blokken ({kind, value} als strings) mogen de publieke
+  // renderer bereiken — een misvormd blok mag nooit de hele pagina breken.
+  const blocks = (Array.isArray(studio["blocks"]) ? studio["blocks"] : []).filter(
+    (b): b is Json => isRecord(b) && typeof b["kind"] === "string" && typeof b["value"] === "string",
+  );
   return {
     username: typeof studio["username"] === "string" ? studio["username"] : "",
     displayName: asText(studio["displayName"], 120),
@@ -86,7 +91,7 @@ export function readPublishedStudio(publicProfile: unknown): WorkspaceStudioPayl
     faviconUrl: asText(studio["faviconUrl"], 2000),
     theme: asText(studio["theme"], 40) ?? "noir",
     cardStyle: asText(studio["cardStyle"], 40) ?? "bordered",
-    blocks: Array.isArray(studio["blocks"]) ? (studio["blocks"] as Json[]) : [],
+    blocks,
     displayPrefs: isRecord(studio["displayPrefs"]) ? (studio["displayPrefs"] as Record<string, Json>) : {},
   };
 }
