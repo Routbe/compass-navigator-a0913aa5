@@ -5,7 +5,7 @@ import { z } from "zod";
  * Stored on workspaces.public_profile; shared by the editor, the server and the public page.
  */
 
-export const HUB_LIMITS = { tagline: 160, bio: 600, links: 20, linkTitle: 60, linkUrl: 500, voiceIntro: 500 } as const;
+export const HUB_LIMITS = { tagline: 160, bio: 600, links: 20, linkTitle: 60, linkUrl: 500, audioTitle: 60, audioCaption: 500 } as const;
 
 const httpsUrl = z
   .string()
@@ -26,19 +26,27 @@ export const hubLinkSchema = z.object({
   url: httpsUrl,
 });
 
+/** Universal audio block: a pointer to hosted audio, never a provider key. */
+export const hubAudioSchema = z.object({
+  title: z.string().trim().max(HUB_LIMITS.audioTitle).default(""),
+  url: httpsUrl,
+  caption: z.string().trim().max(HUB_LIMITS.audioCaption).default(""),
+});
+export type WorkspaceHubAudio = z.infer<typeof hubAudioSchema>;
+
 export const workspaceHubSchema = z.object({
   tagline: z.string().trim().max(HUB_LIMITS.tagline).default(""),
   bio: z.string().trim().max(HUB_LIMITS.bio).default(""),
   links: z.array(hubLinkSchema).max(HUB_LIMITS.links, `Maximaal ${HUB_LIMITS.links} links.`).default([]),
-  /** Spoken introduction, synthesized with the workspace's ElevenLabs voice on the public hub. */
-  voiceIntro: z.string().trim().max(HUB_LIMITS.voiceIntro, `Maximaal ${HUB_LIMITS.voiceIntro} tekens.`).default(""),
+  /** Optional audio block on the public hub (hosted MP3/stream URL). */
+  audio: hubAudioSchema.nullable().default(null),
   published: z.boolean().default(false),
 });
 
 export type WorkspaceHub = z.infer<typeof workspaceHubSchema>;
 export type WorkspaceHubLink = z.infer<typeof hubLinkSchema>;
 
-export const emptyHub = (): WorkspaceHub => ({ tagline: "", bio: "", links: [], voiceIntro: "", published: false });
+export const emptyHub = (): WorkspaceHub => ({ tagline: "", bio: "", links: [], audio: null, published: false });
 
 /** Reads stored JSON defensively: invalid or unknown data becomes an empty, unpublished hub. */
 export function readHub(raw: unknown): WorkspaceHub {
