@@ -18,4 +18,16 @@ describe("workspace hub", () => {
     expect(readHub({ links: "nope" }).published).toBe(false);
     expect(readHub(null).links).toEqual([]);
   });
+
+  it("voice intro defaults to empty and is capped at 500 characters", () => {
+    expect(readHub(null).voiceIntro).toBe("");
+    expect(workspaceHubSchema.parse({ voiceIntro: "Hallo, wij zijn Studio Nova." }).voiceIntro).toBe("Hallo, wij zijn Studio Nova.");
+    expect(workspaceHubSchema.safeParse({ voiceIntro: "x".repeat(501) }).success).toBe(false);
+  });
+
+  it("older stored hubs without a voice intro still read cleanly", () => {
+    const legacy = readHub({ tagline: "Studio", bio: "Wij maken sites.", links: [], published: true });
+    expect(legacy.voiceIntro).toBe("");
+    expect(legacy.published).toBe(true);
+  });
 });
