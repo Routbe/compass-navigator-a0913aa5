@@ -1,8 +1,6 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ExternalLink } from "lucide-react";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { getPublicWorkspace } from "@/lib/workspace-public.functions";
-import { workspaceProfileRecord } from "@/lib/workspace-studio";
-import { WorkspaceHubView } from "@/components/workspace/WorkspaceHubView";
+import { seedWorkspaceStudio, workspaceProfileRecord } from "@/lib/workspace-studio";
 import { ProfileView } from "@/components/profile/ProfileView";
 
 export const Route = createFileRoute("/w/$slug")({
@@ -33,31 +31,13 @@ export const Route = createFileRoute("/w/$slug")({
 
 function WorkspacePage() {
   const ws = Route.useLoaderData();
-  // Eén Studio-engine: de gepubliceerde Studio-pagina rendert met exact
-  // dezelfde ProfileView als een persoonlijk profiel. De legacy hub-view
-  // blijft alleen als terugval voor workspaces die nog nooit publiceerden.
-  if (ws.studio) {
-    return (
-      <main className="min-h-screen bg-background">
-        <ProfileView profile={workspaceProfileRecord(ws.slug, ws.studio)} free={!ws.domainVerified} />
-      </main>
-    );
-  }
+  // Eén renderer: gepubliceerde Studio-pagina, of on-the-fly opgebouwd uit
+  // naam, intro en bestaande links — altijd via dezelfde ProfileView.
+  const payload = ws.studio ?? seedWorkspaceStudio({ slug: ws.slug, name: ws.name, avatarUrl: ws.avatarUrl }, ws.hub);
+  if (!ws.studio && !payload.tagline && ws.description) payload.tagline = ws.description.slice(0, 240);
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16">
-      <WorkspaceHubView name={ws.name} slug={ws.slug} avatarUrl={ws.avatarUrl} hub={ws.hub}>
-        {!ws.hub && ws.description && <p className="text-sm text-muted-foreground">{ws.description}</p>}
-        {ws.profileHandle && (
-          <Link to="/$username" params={{ username: ws.profileHandle }} className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground">
-            Bekijk profiel
-          </Link>
-        )}
-        {ws.domain && (
-          <a href={`https://${ws.domain}`} rel="noopener" className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium">
-            {ws.domain} <ExternalLink className="h-4 w-4" aria-hidden />
-          </a>
-        )}
-      </WorkspaceHubView>
+    <main className="min-h-screen bg-background">
+      <ProfileView profile={workspaceProfileRecord(ws.slug, payload)} free={!ws.domainVerified} />
     </main>
   );
 }
