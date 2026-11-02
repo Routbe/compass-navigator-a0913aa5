@@ -230,6 +230,7 @@ import { Route as ApiUploadPresignRouteImport } from './routes/api_.upload.presi
 import { Route as ApiV1PresenceRouteImport } from './routes/api_.v1.presence'
 import { Route as ApiYoutubeStartRouteImport } from './routes/api_.youtube.start'
 import { Route as AuthMastodonCallbackRouteImport } from './routes/auth_.mastodon.callback'
+import { Route as ClaimWorkspaceTokenRouteImport } from './routes/claim_.workspace.$token'
 import { Route as QrCodeGeneratorContactEmailRouteImport } from './routes/qr-code-generator.contact.email'
 import { Route as QrCodeGeneratorContactSmsRouteImport } from './routes/qr-code-generator.contact.sms'
 import { Route as QrCodeGeneratorContactVcardRouteImport } from './routes/qr-code-generator.contact.vcard'
@@ -1484,6 +1485,11 @@ const AuthMastodonCallbackRoute = AuthMastodonCallbackRouteImport.update({
   path: '/auth/mastodon/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClaimWorkspaceTokenRoute = ClaimWorkspaceTokenRouteImport.update({
+  id: '/claim_/workspace/$token',
+  path: '/claim/workspace/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QrCodeGeneratorContactEmailRoute =
   QrCodeGeneratorContactEmailRouteImport.update({
     id: '/contact/email',
@@ -2367,6 +2373,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/presence': typeof ApiV1PresenceRoute
   '/api/youtube/start': typeof ApiYoutubeStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
+  '/claim/workspace/$token': typeof ClaimWorkspaceTokenRoute
   '/qr-code-generator/contact/email': typeof QrCodeGeneratorContactEmailRoute
   '/qr-code-generator/contact/sms': typeof QrCodeGeneratorContactSmsRoute
   '/qr-code-generator/contact/vcard': typeof QrCodeGeneratorContactVcardRoute
@@ -2691,6 +2698,7 @@ export interface FileRoutesByTo {
   '/api/v1/presence': typeof ApiV1PresenceRoute
   '/api/youtube/start': typeof ApiYoutubeStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
+  '/claim/workspace/$token': typeof ClaimWorkspaceTokenRoute
   '/qr-code-generator/contact/email': typeof QrCodeGeneratorContactEmailRoute
   '/qr-code-generator/contact/sms': typeof QrCodeGeneratorContactSmsRoute
   '/qr-code-generator/contact/vcard': typeof QrCodeGeneratorContactVcardRoute
@@ -3032,6 +3040,7 @@ export interface FileRoutesById {
   '/api_/v1/presence': typeof ApiV1PresenceRoute
   '/api_/youtube/start': typeof ApiYoutubeStartRoute
   '/auth_/mastodon/callback': typeof AuthMastodonCallbackRoute
+  '/claim_/workspace/$token': typeof ClaimWorkspaceTokenRoute
   '/qr-code-generator/contact/email': typeof QrCodeGeneratorContactEmailRoute
   '/qr-code-generator/contact/sms': typeof QrCodeGeneratorContactSmsRoute
   '/qr-code-generator/contact/vcard': typeof QrCodeGeneratorContactVcardRoute
@@ -3374,6 +3383,7 @@ export interface FileRouteTypes {
     | '/api/v1/presence'
     | '/api/youtube/start'
     | '/auth/mastodon/callback'
+    | '/claim/workspace/$token'
     | '/qr-code-generator/contact/email'
     | '/qr-code-generator/contact/sms'
     | '/qr-code-generator/contact/vcard'
@@ -3698,6 +3708,7 @@ export interface FileRouteTypes {
     | '/api/v1/presence'
     | '/api/youtube/start'
     | '/auth/mastodon/callback'
+    | '/claim/workspace/$token'
     | '/qr-code-generator/contact/email'
     | '/qr-code-generator/contact/sms'
     | '/qr-code-generator/contact/vcard'
@@ -4038,6 +4049,7 @@ export interface FileRouteTypes {
     | '/api_/v1/presence'
     | '/api_/youtube/start'
     | '/auth_/mastodon/callback'
+    | '/claim_/workspace/$token'
     | '/qr-code-generator/contact/email'
     | '/qr-code-generator/contact/sms'
     | '/qr-code-generator/contact/vcard'
@@ -4273,6 +4285,7 @@ export interface RootRouteChildren {
   ApiV1PresenceRoute: typeof ApiV1PresenceRoute
   ApiYoutubeStartRoute: typeof ApiYoutubeStartRoute
   AuthMastodonCallbackRoute: typeof AuthMastodonCallbackRoute
+  ClaimWorkspaceTokenRoute: typeof ClaimWorkspaceTokenRoute
   QrContactEmailRoute: typeof QrContactEmailRoute
   QrContactSmsRoute: typeof QrContactSmsRoute
   QrContactVcardRoute: typeof QrContactVcardRoute
@@ -5888,6 +5901,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthMastodonCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/claim_/workspace/$token': {
+      id: '/claim_/workspace/$token'
+      path: '/claim/workspace/$token'
+      fullPath: '/claim/workspace/$token'
+      preLoaderRoute: typeof ClaimWorkspaceTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/qr-code-generator/contact/email': {
       id: '/qr-code-generator/contact/email'
       path: '/contact/email'
@@ -7379,6 +7399,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1PresenceRoute: ApiV1PresenceRoute,
   ApiYoutubeStartRoute: ApiYoutubeStartRoute,
   AuthMastodonCallbackRoute: AuthMastodonCallbackRoute,
+  ClaimWorkspaceTokenRoute: ClaimWorkspaceTokenRoute,
   QrContactEmailRoute: QrContactEmailRoute,
   QrContactSmsRoute: QrContactSmsRoute,
   QrContactVcardRoute: QrContactVcardRoute,
