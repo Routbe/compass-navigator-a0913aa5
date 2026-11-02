@@ -175,6 +175,8 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
   const alias = variant === "alias";
   const isWorkspace = variant === "workspace";
   const [wsCanvas, setWsCanvas] = useState<WorkspaceCanvas | null>(null);
+  /** Geclaimd bedrijfsdomein van de workspace (rout.be/<domein>) + DNS-status. */
+  const [wsDomain, setWsDomain] = useState<{ name: string; verified: boolean } | null>(null);
   const loadPersonal = useServerFn(alias ? getAliasProfile : getStudioProfile);
   const loadWorkspace = useServerFn(getWorkspaceStudioProfile);
   const loadProfileEditor = useCallback(
@@ -336,6 +338,24 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
           setBlocks(Array.isArray(data.blocks) ? (data.blocks as unknown as ProfileBlock[]) : []);
           setDraftRevision(data.draftRevision ?? 0);
           setPublishedRevision(data.publishedRevision ?? 0);
+          if (isWorkspace) {
+            // Het workspace-canvas: zonder deze feiten zou elke sectie-save of
+            // publicatie een leeg workspaceId sturen.
+            const ws = data as Partial<{
+              workspaceId: string; workspaceName: string; workspaceSlug: string;
+              role: string; canEdit: boolean; proPlan: boolean;
+              domain: string | null; domainVerified: boolean;
+            }>;
+            setWsCanvas({
+              workspaceId: ws.workspaceId ?? "",
+              name: ws.workspaceName ?? "",
+              slug: ws.workspaceSlug ?? "",
+              role: ws.role ?? "member",
+              canEdit: Boolean(ws.canEdit),
+              proPlan: Boolean(ws.proPlan),
+            });
+            setWsDomain(ws.domain ? { name: ws.domain, verified: Boolean(ws.domainVerified) } : null);
+          }
         } else if (alias) {
           // The Privacy Alias starts blank: never seed it with the account's
           // real name, email or avatar — that would link it to the member.
