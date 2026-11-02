@@ -78,7 +78,7 @@ function ClaimWorkspacePage() {
 
   return (
     <AppLayout>
-      <main className="mx-auto flex max-w-md flex-col items-center gap-5 px-4 py-16 text-center">
+      <main className="dark mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col items-center justify-center gap-5 bg-background px-4 py-16 text-center text-foreground">
         {loading || (user && q.isLoading) ? (
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-label="Laden" />
         ) : done ? (

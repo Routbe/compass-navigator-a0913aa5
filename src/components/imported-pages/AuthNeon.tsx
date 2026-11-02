@@ -421,7 +421,7 @@ export default function AuthNeon({ initialMode = "magic" }: { initialMode?: Mode
 
   return (
     <AppLayout>
-      <div className="flex min-h-[calc(100vh-4rem)] w-full flex-col items-center justify-center bg-background p-4">
+      <div className="dark flex min-h-[calc(100vh-4rem)] w-full flex-col items-center justify-center bg-background p-4 text-foreground">
         {!adminPortal && <div className="w-full max-w-md">
           <Link
             to="/"

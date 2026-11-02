@@ -144,7 +144,7 @@ export function ProfileMenu() {
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-72 bg-card">
+        <DropdownMenuContent align="end" collisionPadding={16} className="max-h-[70vh] w-[calc(100vw-2rem)] max-w-72 overflow-y-auto bg-card">
           <div className="px-2 py-2">
             <div className="flex items-center gap-2">
               <p className="truncate text-sm font-medium">{displayName}</p>

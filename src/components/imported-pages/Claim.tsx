@@ -209,7 +209,7 @@ export default function Claim() {
   if (authLoading || (user && (profileCheck === "checking" || current))) {
     return (
       <AppLayout>
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-5">
+        <div className="dark flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-5 text-foreground">
           <div className="flex min-h-44 w-full max-w-md items-center justify-center rounded-2xl border border-border bg-card">
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Account wordt gecontroleerd…
@@ -223,7 +223,7 @@ export default function Claim() {
   if (user && profileCheck === "error") {
     return (
       <AppLayout>
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-5 text-center">
+        <div className="dark flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-5 text-center text-foreground">
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8">
             <h1 className="font-display text-2xl">Accountcontrole mislukt</h1>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -242,7 +242,7 @@ export default function Claim() {
   if (current) {
     return (
       <AppLayout>
-        <div className="-mx-4 -my-8 flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-5 sm:-mx-6">
+        <div className="dark -mx-4 -my-8 flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-background px-5 text-foreground sm:-mx-6">
           <div className="w-full max-w-md rounded-3xl border border-border/60 bg-card/40 p-8 text-center backdrop-blur-sm">
             <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-border/60 bg-background/40">
               <Check className="h-5 w-5 text-accent" aria-hidden />
