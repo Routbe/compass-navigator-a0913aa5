@@ -1573,20 +1573,29 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                   <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-lg font-medium">
-                        {alias
-                          ? t("studio.editor.aliasTitle")
-                          : t("studio.editor.verifiedTitle")}
+                        {isWorkspace
+                          ? "Bedrijfsverificatie"
+                          : alias
+                            ? t("studio.editor.aliasTitle")
+                            : t("studio.editor.verifiedTitle")}
                       </h2>
                       {alias && (
                         <span className="rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                           {t("studio.editor.aliasLimit")}
                         </span>
                       )}
+                      {isWorkspace && verified && (
+                        <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                          Geverifieerd bedrijf
+                        </span>
+                      )}
                     </div>
                     <p id="handle-help" className="mt-1 text-xs text-muted-foreground">
-                      {alias
-                        ? t("studio.editor.aliasHint")
-                        : handleRuleHint(handleCtx)}
+                      {isWorkspace
+                        ? "De workspace-naam is de vaste slug. Claim je bedrijfsdomein op het tabblad Domains om rout.be/<julliedomein> te krijgen — dat is de verificatie van jullie organisatie."
+                        : alias
+                          ? t("studio.editor.aliasHint")
+                          : handleRuleHint(handleCtx)}
                     </p>
                     <div className="mt-3 flex min-w-0 items-center gap-2">
                       <span className="shrink-0 font-mono text-sm text-muted-foreground">
