@@ -282,6 +282,7 @@ import { Route as AuthenticatedStudioPersonalFeatureRouteImport } from './routes
 import { Route as AuthenticatedStudioWorkspacesNewRouteImport } from './routes/_authenticated/studio_.workspaces.new'
 import { Route as ApiPublicEmailUnsubscribeRouteImport } from './routes/api.public.email.unsubscribe'
 import { Route as ApiAgentProfileDraftRouteImport } from './routes/api_.agent.profile.draft'
+import { Route as ApiAuditRevertLogIdRouteImport } from './routes/api_.audit.revert.$logId'
 import { Route as ApiPublicAuthProvidersRouteImport } from './routes/api_.public.auth.providers'
 import { Route as ApiPublicBadgeHandleRouteImport } from './routes/api_.public.badge.$handle'
 import { Route as ApiPublicBlueskyCallbackRouteImport } from './routes/api_.public.bluesky.callback'
@@ -1773,6 +1774,11 @@ const ApiAgentProfileDraftRoute = ApiAgentProfileDraftRouteImport.update({
   path: '/api/agent/profile/draft',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuditRevertLogIdRoute = ApiAuditRevertLogIdRouteImport.update({
+  id: '/api_/audit/revert/$logId',
+  path: '/api/audit/revert/$logId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAuthProvidersRoute = ApiPublicAuthProvidersRouteImport.update({
   id: '/api_/public/auth/providers',
   path: '/api/public/auth/providers',
@@ -2434,6 +2440,7 @@ export interface FileRoutesByFullPath {
   '/studio/workspaces/new': typeof AuthenticatedStudioWorkspacesNewRoute
   '/api/public/email/unsubscribe': typeof ApiPublicEmailUnsubscribeRoute
   '/api/agent/profile/draft': typeof ApiAgentProfileDraftRoute
+  '/api/audit/revert/$logId': typeof ApiAuditRevertLogIdRoute
   '/api/public/auth/providers': typeof ApiPublicAuthProvidersRoute
   '/api/public/badge/$handle': typeof ApiPublicBadgeHandleRoute
   '/api/public/bluesky/callback': typeof ApiPublicBlueskyCallbackRoute
@@ -2759,6 +2766,7 @@ export interface FileRoutesByTo {
   '/studio/workspaces/new': typeof AuthenticatedStudioWorkspacesNewRoute
   '/api/public/email/unsubscribe': typeof ApiPublicEmailUnsubscribeRoute
   '/api/agent/profile/draft': typeof ApiAgentProfileDraftRoute
+  '/api/audit/revert/$logId': typeof ApiAuditRevertLogIdRoute
   '/api/public/auth/providers': typeof ApiPublicAuthProvidersRoute
   '/api/public/badge/$handle': typeof ApiPublicBadgeHandleRoute
   '/api/public/bluesky/callback': typeof ApiPublicBlueskyCallbackRoute
@@ -3103,6 +3111,7 @@ export interface FileRoutesById {
   '/_authenticated/studio_/workspaces/new': typeof AuthenticatedStudioWorkspacesNewRoute
   '/api/public/email/unsubscribe': typeof ApiPublicEmailUnsubscribeRoute
   '/api_/agent/profile/draft': typeof ApiAgentProfileDraftRoute
+  '/api_/audit/revert/$logId': typeof ApiAuditRevertLogIdRoute
   '/api_/public/auth/providers': typeof ApiPublicAuthProvidersRoute
   '/api_/public/badge/$handle': typeof ApiPublicBadgeHandleRoute
   '/api_/public/bluesky/callback': typeof ApiPublicBlueskyCallbackRoute
@@ -3447,6 +3456,7 @@ export interface FileRouteTypes {
     | '/studio/workspaces/new'
     | '/api/public/email/unsubscribe'
     | '/api/agent/profile/draft'
+    | '/api/audit/revert/$logId'
     | '/api/public/auth/providers'
     | '/api/public/badge/$handle'
     | '/api/public/bluesky/callback'
@@ -3772,6 +3782,7 @@ export interface FileRouteTypes {
     | '/studio/workspaces/new'
     | '/api/public/email/unsubscribe'
     | '/api/agent/profile/draft'
+    | '/api/audit/revert/$logId'
     | '/api/public/auth/providers'
     | '/api/public/badge/$handle'
     | '/api/public/bluesky/callback'
@@ -4115,6 +4126,7 @@ export interface FileRouteTypes {
     | '/_authenticated/studio_/workspaces/new'
     | '/api/public/email/unsubscribe'
     | '/api_/agent/profile/draft'
+    | '/api_/audit/revert/$logId'
     | '/api_/public/auth/providers'
     | '/api_/public/badge/$handle'
     | '/api_/public/bluesky/callback'
@@ -4316,6 +4328,7 @@ export interface RootRouteChildren {
   UUsernameTipRoute: typeof UUsernameTipRoute
   WSlugFeedbackRoute: typeof WSlugFeedbackRoute
   ApiAgentProfileDraftRoute: typeof ApiAgentProfileDraftRoute
+  ApiAuditRevertLogIdRoute: typeof ApiAuditRevertLogIdRoute
   ApiPublicAuthProvidersRoute: typeof ApiPublicAuthProvidersRoute
   ApiPublicBadgeHandleRoute: typeof ApiPublicBadgeHandleRoute
   ApiPublicBlueskyCallbackRoute: typeof ApiPublicBlueskyCallbackRoute
@@ -6278,6 +6291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentProfileDraftRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/audit/revert/$logId': {
+      id: '/api_/audit/revert/$logId'
+      path: '/api/audit/revert/$logId'
+      fullPath: '/api/audit/revert/$logId'
+      preLoaderRoute: typeof ApiAuditRevertLogIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/public/auth/providers': {
       id: '/api_/public/auth/providers'
       path: '/api/public/auth/providers'
@@ -7440,6 +7460,7 @@ const rootRouteChildren: RootRouteChildren = {
   UUsernameTipRoute: UUsernameTipRoute,
   WSlugFeedbackRoute: WSlugFeedbackRoute,
   ApiAgentProfileDraftRoute: ApiAgentProfileDraftRoute,
+  ApiAuditRevertLogIdRoute: ApiAuditRevertLogIdRoute,
   ApiPublicAuthProvidersRoute: ApiPublicAuthProvidersRoute,
   ApiPublicBadgeHandleRoute: ApiPublicBadgeHandleRoute,
   ApiPublicBlueskyCallbackRoute: ApiPublicBlueskyCallbackRoute,
