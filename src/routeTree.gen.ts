@@ -347,6 +347,7 @@ import { Route as AuthenticatedConsoleAppsAppIdSecurityRouteImport } from './rou
 import { Route as AuthenticatedStudioWWorkspaceSlugFeatureRouteImport } from './routes/_authenticated/studio_.w.$workspaceSlug.$feature'
 import { Route as AuthenticatedStudioWWorkspaceSlugHubRouteImport } from './routes/_authenticated/studio_.w.$workspaceSlug.hub'
 import { Route as AuthenticatedStudioWWorkspaceSlugSettingsRouteImport } from './routes/_authenticated/studio_.w.$workspaceSlug.settings'
+import { Route as AuthenticatedStudioWWorkspaceSlugStudioRouteImport } from './routes/_authenticated/studio_.w.$workspaceSlug.studio'
 import { Route as ApiPublicBookingsIdActionRouteImport } from './routes/api_.public.bookings.$id.$action'
 import { Route as ApiPublicIntegrationsMastodonAvatarRouteImport } from './routes/api_.public.integrations.mastodon.avatar'
 
@@ -2142,6 +2143,12 @@ const AuthenticatedStudioWWorkspaceSlugSettingsRoute =
     path: '/studio/w/$workspaceSlug/settings',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedStudioWWorkspaceSlugStudioRoute =
+  AuthenticatedStudioWWorkspaceSlugStudioRouteImport.update({
+    id: '/studio_/w/$workspaceSlug/studio',
+    path: '/studio/w/$workspaceSlug/studio',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiPublicBookingsIdActionRoute =
   ApiPublicBookingsIdActionRouteImport.update({
     id: '/api_/public/bookings/$id/$action',
@@ -2492,6 +2499,7 @@ export interface FileRoutesByFullPath {
   '/studio/w/$workspaceSlug/$feature': typeof AuthenticatedStudioWWorkspaceSlugFeatureRoute
   '/studio/w/$workspaceSlug/hub': typeof AuthenticatedStudioWWorkspaceSlugHubRoute
   '/studio/w/$workspaceSlug/settings': typeof AuthenticatedStudioWWorkspaceSlugSettingsRoute
+  '/studio/w/$workspaceSlug/studio': typeof AuthenticatedStudioWWorkspaceSlugStudioRoute
   '/api/public/bookings/$id/$action': typeof ApiPublicBookingsIdActionRoute
   '/api/public/integrations/mastodon/avatar': typeof ApiPublicIntegrationsMastodonAvatarRoute
   '/console/apps/$appId/': typeof AuthenticatedConsoleAppsAppIdIndexRoute
@@ -2816,6 +2824,7 @@ export interface FileRoutesByTo {
   '/studio/w/$workspaceSlug/$feature': typeof AuthenticatedStudioWWorkspaceSlugFeatureRoute
   '/studio/w/$workspaceSlug/hub': typeof AuthenticatedStudioWWorkspaceSlugHubRoute
   '/studio/w/$workspaceSlug/settings': typeof AuthenticatedStudioWWorkspaceSlugSettingsRoute
+  '/studio/w/$workspaceSlug/studio': typeof AuthenticatedStudioWWorkspaceSlugStudioRoute
   '/api/public/bookings/$id/$action': typeof ApiPublicBookingsIdActionRoute
   '/api/public/integrations/mastodon/avatar': typeof ApiPublicIntegrationsMastodonAvatarRoute
   '/console/apps/$appId': typeof AuthenticatedConsoleAppsAppIdIndexRoute
@@ -3159,6 +3168,7 @@ export interface FileRoutesById {
   '/_authenticated/studio_/w/$workspaceSlug/$feature': typeof AuthenticatedStudioWWorkspaceSlugFeatureRoute
   '/_authenticated/studio_/w/$workspaceSlug/hub': typeof AuthenticatedStudioWWorkspaceSlugHubRoute
   '/_authenticated/studio_/w/$workspaceSlug/settings': typeof AuthenticatedStudioWWorkspaceSlugSettingsRoute
+  '/_authenticated/studio_/w/$workspaceSlug/studio': typeof AuthenticatedStudioWWorkspaceSlugStudioRoute
   '/api_/public/bookings/$id/$action': typeof ApiPublicBookingsIdActionRoute
   '/api_/public/integrations/mastodon/avatar': typeof ApiPublicIntegrationsMastodonAvatarRoute
   '/_authenticated/console/apps/$appId/': typeof AuthenticatedConsoleAppsAppIdIndexRoute
@@ -3502,6 +3512,7 @@ export interface FileRouteTypes {
     | '/studio/w/$workspaceSlug/$feature'
     | '/studio/w/$workspaceSlug/hub'
     | '/studio/w/$workspaceSlug/settings'
+    | '/studio/w/$workspaceSlug/studio'
     | '/api/public/bookings/$id/$action'
     | '/api/public/integrations/mastodon/avatar'
     | '/console/apps/$appId/'
@@ -3826,6 +3837,7 @@ export interface FileRouteTypes {
     | '/studio/w/$workspaceSlug/$feature'
     | '/studio/w/$workspaceSlug/hub'
     | '/studio/w/$workspaceSlug/settings'
+    | '/studio/w/$workspaceSlug/studio'
     | '/api/public/bookings/$id/$action'
     | '/api/public/integrations/mastodon/avatar'
     | '/console/apps/$appId'
@@ -4168,6 +4180,7 @@ export interface FileRouteTypes {
     | '/_authenticated/studio_/w/$workspaceSlug/$feature'
     | '/_authenticated/studio_/w/$workspaceSlug/hub'
     | '/_authenticated/studio_/w/$workspaceSlug/settings'
+    | '/_authenticated/studio_/w/$workspaceSlug/studio'
     | '/api_/public/bookings/$id/$action'
     | '/api_/public/integrations/mastodon/avatar'
     | '/_authenticated/console/apps/$appId/'
@@ -6720,6 +6733,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudioWWorkspaceSlugSettingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/studio_/w/$workspaceSlug/studio': {
+      id: '/_authenticated/studio_/w/$workspaceSlug/studio'
+      path: '/studio/w/$workspaceSlug/studio'
+      fullPath: '/studio/w/$workspaceSlug/studio'
+      preLoaderRoute: typeof AuthenticatedStudioWWorkspaceSlugStudioRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api_/public/bookings/$id/$action': {
       id: '/api_/public/bookings/$id/$action'
       path: '/api/public/bookings/$id/$action'
@@ -6889,6 +6909,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedStudioWWorkspaceSlugFeatureRoute: typeof AuthenticatedStudioWWorkspaceSlugFeatureRoute
   AuthenticatedStudioWWorkspaceSlugHubRoute: typeof AuthenticatedStudioWWorkspaceSlugHubRoute
   AuthenticatedStudioWWorkspaceSlugSettingsRoute: typeof AuthenticatedStudioWWorkspaceSlugSettingsRoute
+  AuthenticatedStudioWWorkspaceSlugStudioRoute: typeof AuthenticatedStudioWWorkspaceSlugStudioRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -6917,6 +6938,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedStudioWWorkspaceSlugHubRoute,
   AuthenticatedStudioWWorkspaceSlugSettingsRoute:
     AuthenticatedStudioWWorkspaceSlugSettingsRoute,
+  AuthenticatedStudioWWorkspaceSlugStudioRoute:
+    AuthenticatedStudioWWorkspaceSlugStudioRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
