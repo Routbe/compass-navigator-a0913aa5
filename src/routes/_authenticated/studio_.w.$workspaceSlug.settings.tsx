@@ -13,6 +13,8 @@ import {
   type WorkspaceSettings as WsSettings,
 } from "@/lib/workspaces.functions";
 import { getActiveScopeStorage } from "@/lib/assets.functions";
+import { listWorkspaceAgentAudit } from "@/lib/agent/chronos.functions";
+import { canRevert } from "@/lib/agent/chronos";
 import { canManageTeam } from "@/lib/workspace-rules";
 
 export const Route = createFileRoute("/_authenticated/studio_/w/$workspaceSlug/settings")({
