@@ -140,6 +140,7 @@ import {
   publishAliasProfile,
 } from "@/lib/alias-profile.functions";
 import { SubdomainPanel } from "@/components/dashboard/SubdomainPanel";
+import { WorkspaceDomainPanel } from "@/components/dashboard/WorkspaceDomainPanel";
 import { BadgesPanel } from "@/components/dashboard/BadgesPanel";
 import { BadgeActivityPanel } from "@/components/dashboard/BadgeActivityPanel";
 import { EmailForwardingPanel } from "@/components/dashboard/EmailForwardingPanel";
