@@ -77,7 +77,7 @@ function WorkspaceSettingsPage() {
       <header>
         <h1 className="text-2xl font-semibold">{ws.name}</h1>
         <p className="text-sm text-muted-foreground">rout.be/w/{ws.slug}{ws.rootAlias ? ` · rout.be/${ws.rootAlias}` : ""}</p>
-        <Button asChild variant="outline" size="sm" className="mt-3"><Link to="/studio/w/$workspaceSlug/hub" params={{ workspaceSlug: ws.slug }}>Open Profiel Hub van {ws.name}</Link></Button>
+        <Button asChild variant="outline" size="sm" className="mt-3"><Link to="/studio/w/$workspaceSlug/studio" params={{ workspaceSlug: ws.slug }}>Open Studio van {ws.name}</Link></Button>
       </header>
 
       {manage && <GeneralCard ws={ws} onDone={refresh} />}
