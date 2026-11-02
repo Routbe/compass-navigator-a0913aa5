@@ -41,6 +41,7 @@ import { BookingBlockSettings } from "@/components/dashboard/BookingBlockSetting
 import { GalleryBlockSettings } from "@/components/dashboard/GalleryBlockSettings";
 import { SocialFeedBlockSettings } from "@/components/dashboard/SocialFeedBlockSettings";
 import { MediaEmbedBlockSettings } from "@/components/dashboard/MediaEmbedBlockSettings";
+import { AudioBlockSettings } from "@/components/dashboard/AudioBlockSettings";
 import { ContactFormBlockSettings } from "@/components/dashboard/ContactFormBlockSettings";
 import { EventListBlockSettings } from "@/components/dashboard/EventListBlockSettings";
 import {
@@ -284,6 +285,12 @@ export function ProfileLinksManager({
                     />
                   ) : b.kind === "media_embed" ? (
                     <MediaEmbedBlockSettings
+                      value={b.value}
+                      onChange={(value) => patch(b.id, { value })}
+                      onTitle={(label) => patch(b.id, { label })}
+                    />
+                  ) : b.kind === "audio_player" ? (
+                    <AudioBlockSettings
                       value={b.value}
                       onChange={(value) => patch(b.id, { value })}
                       onTitle={(label) => patch(b.id, { label })}
