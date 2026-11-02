@@ -15,6 +15,9 @@ export type AgentAction = (typeof AGENT_ACTIONS)[number];
 export const AGENT_WEBHOOK_EVENTS = ["workspace.upgraded", "domain.verified"] as const;
 export type AgentWebhookEvent = (typeof AGENT_WEBHOOK_EVENTS)[number];
 
+/** JSON-only snapshots: the timeline crosses the server-fn boundary. */
+export type ChronosJson = string | number | boolean | null | ChronosJson[] | { [key: string]: ChronosJson };
+
 export type AgentAuditEntry = {
   id: string;
   workspaceId: string | null;
@@ -23,8 +26,8 @@ export type AgentAuditEntry = {
   action: string;
   targetTable: string | null;
   targetId: string | null;
-  previousState: unknown;
-  newState: unknown;
+  previousState: ChronosJson;
+  newState: ChronosJson;
   revertedAt: string | null;
   createdAt: string;
 };

@@ -37,8 +37,8 @@ const toEntry = (r: AuditRow): AgentAuditEntry => ({
   action: r.action,
   targetTable: r.target_table,
   targetId: r.target_id,
-  previousState: r.previous_state,
-  newState: r.new_state,
+  previousState: (r.previous_state ?? null) as AgentAuditEntry["previousState"],
+  newState: (r.new_state ?? null) as AgentAuditEntry["newState"],
   revertedAt: r.reverted_at,
   createdAt: r.created_at,
 });
