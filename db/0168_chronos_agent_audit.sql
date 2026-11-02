@@ -30,11 +30,12 @@ end $$;
 
 alter table public.agent_audit_logs enable row level security;
 drop policy if exists rout_agent_audit_read on public.agent_audit_logs;
--- Owners/admins of the workspace read the timeline; writes go through definers.
+-- The delegating human reads their own agent's actions; workspace owners/admins
+-- read the workspace timeline. Writes go through definers.
 create policy rout_agent_audit_read on public.agent_audit_logs
   for select using (
-    workspace_id is not null
-    and public.rout_workspace_role(workspace_id) in ('owner', 'admin')
+    user_id = public.rout_current_user_id()
+    or (workspace_id is not null and public.rout_workspace_role(workspace_id) in ('owner', 'admin'))
   );
 
 -- Append-only insert for the app role: the actor must be the current user.
@@ -78,6 +79,29 @@ revoke all on function public.rout_agent_audit_mark_reverted(uuid) from public;
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'rout_app') then
     grant execute on function public.rout_agent_audit_mark_reverted(uuid) to rout_app;
+  end if;
+end $$;
+
+-- Revert of workspace.provision: hard-delete only an unclaimed agent workspace
+-- that the calling human's agent provisioned. Claimed workspaces are untouchable.
+create or replace function public.rout_agent_audit_revert_workspace(p_workspace_id uuid) returns void
+  language plpgsql security definer set search_path = public
+  as $$
+  begin
+    delete from public.workspaces w
+     where w.id = p_workspace_id
+       and exists (
+         select 1 from public.agent_workspace_claims c
+          where c.workspace_id = w.id
+            and c.claimed_at is null
+            and c.requested_by = public.rout_current_user_id()
+       );
+    if not found then raise exception 'revert_not_allowed'; end if;
+  end $$;
+revoke all on function public.rout_agent_audit_revert_workspace(uuid) from public;
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'rout_app') then
+    grant execute on function public.rout_agent_audit_revert_workspace(uuid) to rout_app;
   end if;
 end $$;
 

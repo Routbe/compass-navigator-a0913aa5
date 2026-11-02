@@ -100,8 +100,13 @@ export async function revertAgentMutation(userId: string, logId: string): Promis
     const row = rows[0];
     if (!row) throw new RevertError("Logregel niet gevonden.", 404);
     const entry = toEntry(row);
-    if (!entry.workspaceId) throw new RevertError("Deze actie is niet aan een workspace gekoppeld.", 400);
-    await assertWorkspaceRole(userId, entry.workspaceId, ["owner", "admin"]);
+    // The delegating human may always revert their own agent; otherwise the
+    // workspace owner/admin may. Unclaimed staging workspaces have no members,
+    // so the delegating human is the only possible reverter there.
+    if (entry.userId !== userId) {
+      if (!entry.workspaceId) throw new RevertError("Geen toegang tot deze logregel.", 403);
+      await assertWorkspaceRole(userId, entry.workspaceId, ["owner", "admin"]);
+    }
     if (!canRevert(entry)) throw new RevertError("Deze actie kan niet (meer) worden teruggedraaid.", 409);
 
     const strategy = revertStrategy(entry.action);
@@ -117,13 +122,8 @@ export async function revertAgentMutation(userId: string, logId: string): Promis
       await patchProfileDraft(entry.userId, space, { fields: previous.fields });
     } else if (strategy === "delete_workspace") {
       if (!entry.targetId) throw new RevertError("Onbekend doel voor deze actie.", 400);
-      // Only an unclaimed, agent-provisioned workspace may be removed this way.
-      await sql`
-        delete from public.workspaces
-         where id = ${entry.targetId}
-           and coalesce((public_profile->>'agentProvisioned')::boolean, false)
-           and owner_id is null
-      `;
+      // Definer hard-deletes only an unclaimed workspace this human's agent made.
+      await sql`select public.rout_agent_audit_revert_workspace(${entry.targetId})`;
     }
 
     await sql`select public.rout_agent_audit_mark_reverted(${logId})`;
