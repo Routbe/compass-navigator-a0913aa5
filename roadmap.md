@@ -56,8 +56,10 @@
 - [x] GET /api/badge/verify: verified human + requesting origin matches a registered domain
 
 ## Agentic web — phase 2 (after phase 1)
-- [ ] Agent-provisioned workspaces: no owner, claim token only, NO email (agent delivers the link), hard delete after 48 h incl. OAuth apps, QR codes, drafts
-- [ ] Claim handoff: claimer becomes Owner, agent becomes a visible Connected App/Bot (revocable)
+- [x] Agent-provisioned workspaces (0164 applied live): POST /api/agent/workspaces (scope assets:write, strictObject rejects email), claim token hashed (SHA-256) only, 48 h TTL enforced by DB constraint, max 3 open per human
+- [x] Claim handoff: /claim/workspace/$token page (preview + claim server functions), claimer becomes Owner, bot stays visible via member-read RLS, owner/admin can revoke
+- [x] Auto-cleanup: rout_purge_unclaimed_agent_workspaces() hard-deletes workspace + OAuth apps, QRs, bookings, transfers; cron route /api/public/cron/purge-agent-workspaces (LOVABLE_CRON_SECRET)
+- [x] Tests: agent-claims.test.ts (token format, zero-email schema, slug rules, 48 h, failure mapping)
 - [ ] Agent M2M API: workspaces, oauth-apps (secret once), assets; quota checker + 402 before every mutation
 - [ ] Chronos audit log with the agent as actor; bots visible in Team settings
 - [ ] Custom domains M2M: pending + DNS records, verify endpoint
