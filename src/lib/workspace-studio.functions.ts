@@ -18,6 +18,9 @@ export type WorkspaceStudioDTO = {
   canEdit: boolean;
   /** Plus/Pro/Business: unlocks the same Pro design options as a verified member. */
   proPlan: boolean;
+  /** Claimed business domain; when DNS-verified the hub lives at rout.be/<domain>. */
+  domain: string | null;
+  domainVerified: boolean;
   username: string;
   displayName: string | null;
   tagline: string | null;
@@ -27,7 +30,8 @@ export type WorkspaceStudioDTO = {
   cardStyle: string;
   blocks: Json[];
   displayPrefs: Record<string, Json>;
-  verified: false;
+  /** The workspace equivalent of identity verification: a DNS-verified business domain or the Business plan. */
+  verified: boolean;
   status: "active";
   verifiedLegalName: null;
   draftRevision: number;
@@ -59,8 +63,10 @@ export const getWorkspaceStudioProfile = createServerFn({ method: "POST" })
       role: ws.role,
       canEdit,
       proPlan: plan !== "free",
+      domain: ws.domain,
+      domainVerified: ws.domainVerified,
       ...draft.payload,
-      verified: false,
+      verified: ws.domainVerified || plan === "business",
       status: "active",
       verifiedLegalName: null,
       ...draft.meta,
