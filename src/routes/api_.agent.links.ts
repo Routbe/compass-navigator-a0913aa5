@@ -43,6 +43,16 @@ export const Route = createFileRoute("/api_/agent/links")({
                 customDomain: null,
                 kind: parsed.data.kind ?? "qr",
               });
+              const { recordAgentMutation } = await import("@/lib/agent/chronos.server");
+              await recordAgentMutation({
+                workspaceId: null,
+                userId: agent.userId,
+                clientId: agent.clientId,
+                action: "link.create",
+                targetTable: "tracked_qrs",
+                targetId: String(row["id"]),
+                newState: { slug: row["slug"], target_url: row["target_url"], label: parsed.data.label ?? null },
+              });
               return agentOk({ id: row["id"], short_url: `${publicOrigin(request)}/s/${row["slug"]}`, target_url: row["target_url"], created_by_client: agent.clientId }, 201);
             } catch (error) {
               const message = error instanceof Error ? error.message : "";

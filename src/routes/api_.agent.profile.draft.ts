@@ -59,6 +59,12 @@ export const Route = createFileRoute("/api_/agent/profile/draft")({
             if (theme) fields["theme"] = theme;
             if (cardStyle) fields["cardStyle"] = cardStyle;
             if (blocks) fields["blocks"] = (checks[2] as { blocks: unknown[] }).blocks;
+            // Chronos snapshot: the current values of every key the agent touches,
+            // so the human can restore them with one click.
+            const prevRows = (await sql`select payload from public.profile_drafts where user_id = ${agent.userId} and space = ${space}`) as { payload: Record<string, unknown> }[];
+            const prevPayload = prevRows[0]?.payload ?? {};
+            const previousFields: Record<string, unknown> = {};
+            for (const key of Object.keys(fields)) previousFields[key] = prevPayload[key] ?? null;
             const { patchProfileDraft } = await import("@/lib/profile-drafts.server");
             let meta2;
             try {
