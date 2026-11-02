@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowDown, ArrowUp, ExternalLink, Plus, Settings, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, Loader2, Play, Plus, Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { DocHelpLink } from "@/components/seo/DocHelpLink";
 import { WorkspaceHubView } from "@/components/workspace/WorkspaceHubView";
 import { activateScopeFromUrl, getWorkspaceHub, saveWorkspaceHub } from "@/lib/workspaces.functions";
+import { getWorkspaceVoiceSettings, speakWorkspaceVoice } from "@/lib/workspace-voice.functions";
 import { HUB_LIMITS, hubLinkSchema, type WorkspaceHub } from "@/lib/workspace-hub";
 import { ROLE_LABELS } from "@/lib/workspace-rules";
 
@@ -141,6 +142,15 @@ function WorkspaceHubPage() {
             <Textarea aria-label="Over de workspace" placeholder="Wie zijn jullie en wat doen jullie?" rows={4} maxLength={HUB_LIMITS.bio} value={hub.bio} disabled={!edit} onChange={(e) => setHub({ ...hub, bio: e.target.value })} />
           </section>
 
+          <VoiceIntroSection
+            workspaceId={ws.workspaceId}
+            slug={ws.slug}
+            edit={edit}
+            busy={busy}
+            text={hub.voiceIntro}
+            onChange={(voiceIntro) => setHub({ ...hub, voiceIntro })}
+          />
+
           <section className={card}>
             <h2 className="font-medium">Links</h2>
             {hub.links.length === 0 && <p className="text-sm text-muted-foreground">Nog geen links.</p>}
@@ -186,5 +196,70 @@ function WorkspaceHubPage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+/** Spoken introduction: text in the workspace's ElevenLabs voice, playable on the public Profile Hub. */
+function VoiceIntroSection({
+  workspaceId,
+  slug,
+  edit,
+  busy,
+  text,
+  onChange,
+}: {
+  workspaceId: string;
+  slug: string;
+  edit: boolean;
+  busy: boolean;
+  text: string;
+  onChange: (value: string) => void;
+}) {
+  const speak = useServerFn(speakWorkspaceVoice);
+  const voice = useQuery({
+    queryKey: ["workspace-voice", workspaceId],
+    queryFn: () => getWorkspaceVoiceSettings({ data: { workspaceId } }),
+    retry: false,
+  });
+  const [previewing, setPreviewing] = useState(false);
+
+  const preview = async () => {
+    if (!text.trim()) return void toast.error("Schrijf eerst een introductietekst.");
+    setPreviewing(true);
+    try {
+      const r = await speak({ data: { workspace_id: workspaceId, text: text.trim() } });
+      await new Audio(`data:${r.contentType};base64,${r.audioBase64}`).play();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Preview genereren lukte niet.");
+    } finally {
+      setPreviewing(false);
+    }
+  };
+
+  return (
+    <section className={card}>
+      <h2 className="font-medium">Ingesproken introductie</h2>
+      <p className="text-sm text-muted-foreground">
+        Bezoekers van rout.be/w/{slug} kunnen deze tekst beluisteren in de ElevenLabs-stem van de workspace.
+        {voice.data?.configured
+          ? " Er is een stem gekoppeld."
+          : <> Koppel eerst een sleutel en Voice ID via <Link to="/studio/w/$workspaceSlug/settings" params={{ workspaceSlug: slug }} className="underline">Instellingen</Link>.</>}
+      </p>
+      <Textarea
+        aria-label="Ingesproken introductie"
+        placeholder="Bijv. Hallo, wij zijn Studio Nova — een digitaal bureau uit Gent…"
+        rows={3}
+        maxLength={HUB_LIMITS.voiceIntro}
+        value={text}
+        disabled={!edit}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <div className="flex flex-wrap items-center gap-3">
+        <Button type="button" variant="outline" size="sm" disabled={!edit || busy || previewing || !voice.data?.configured || !text.trim()} onClick={() => void preview()}>
+          {previewing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Beluister preview
+        </Button>
+        <span className="text-xs text-muted-foreground">{text.length}/{HUB_LIMITS.voiceIntro}</span>
+      </div>
+    </section>
   );
 }

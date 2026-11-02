@@ -239,8 +239,9 @@ function VoiceCard({ ws }: { ws: WsSettings }) {
     <section className={card}>
       <h2 className="font-medium">Audio &amp; Voice (ElevenLabs)</h2>
       <p className="text-sm text-muted-foreground">
-        Koppel een ElevenLabs-sleutel en Voice ID (bijv. je gekloonde stem) aan deze workspace. Externe apps met
-        "Login met ROUT" kunnen dan via <code className="text-xs">/api/workspace/voice</code> spraak genereren.
+        Koppel een ElevenLabs-sleutel en Voice ID (bijv. je gekloonde stem of bedrijfsstem) aan deze workspace.
+        Bezoekers van je Profiel Hub kunnen dan een ingesproken introductie in die stem beluisteren — stel de
+        tekst in via de <Link to="/studio/w/$workspaceSlug/hub" params={{ workspaceSlug: ws.slug }} className="underline">Profiel Hub-studio</Link>.
         De sleutel wordt versleuteld opgeslagen en is daarna nooit meer uitleesbaar.
       </p>
       <p className="text-sm">
