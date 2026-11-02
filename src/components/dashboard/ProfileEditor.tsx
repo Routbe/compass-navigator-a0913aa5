@@ -1941,7 +1941,15 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
             </Accordion>
           )}
 
-          {tab === "identity" && verified && (
+          {tab === "identity" && (verified || isWorkspace) && (
+            isWorkspace ? (
+              // Workspace-verificatie = het bedrijfsdomein (rout.be/<domein>),
+              // geen persoonlijke eID. Subdomein/Bluesky zijn persoonsgebonden.
+              <WorkspaceDomainPanel
+                workspaceId={wsCanvas?.workspaceId ?? ""}
+                onVerified={() => setLoadAttempt((n) => n + 1)}
+              />
+            ) : (
             <Accordion type="single" collapsible className="space-y-3">
               <AccordionItem
                 value="subdomain_settings"
@@ -1970,6 +1978,7 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+            )
           )}
         </div>
 
