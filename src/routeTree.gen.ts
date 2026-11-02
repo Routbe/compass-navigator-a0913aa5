@@ -209,6 +209,7 @@ import { Route as ApiBookingsIdRouteImport } from './routes/api.bookings.$id'
 import { Route as ApiAdminMailCheckRouteImport } from './routes/api_.admin.mail-check'
 import { Route as ApiAgentIdentityRouteImport } from './routes/api_.agent.identity'
 import { Route as ApiAgentLinksRouteImport } from './routes/api_.agent.links'
+import { Route as ApiAgentWorkspacesRouteImport } from './routes/api_.agent.workspaces'
 import { Route as ApiAuthSplatRouteImport } from './routes/api_.auth.$'
 import { Route as ApiBadgeVerifyRouteImport } from './routes/api_.badge.verify'
 import { Route as ApiBunqCheckStatusRouteImport } from './routes/api_.bunq.check-status'
@@ -293,6 +294,7 @@ import { Route as ApiPublicCronCheckDnsRouteImport } from './routes/api_.public.
 import { Route as ApiPublicCronCleanupAssetsRouteImport } from './routes/api_.public.cron.cleanup-assets'
 import { Route as ApiPublicCronDeliverWebhooksRouteImport } from './routes/api_.public.cron.deliver-webhooks'
 import { Route as ApiPublicCronPurgeAccountsRouteImport } from './routes/api_.public.cron.purge-accounts'
+import { Route as ApiPublicCronPurgeAgentWorkspacesRouteImport } from './routes/api_.public.cron.purge-agent-workspaces'
 import { Route as ApiPublicCronPurgeAltchaRouteImport } from './routes/api_.public.cron.purge-altcha'
 import { Route as ApiPublicCronPurgeSharedFilesRouteImport } from './routes/api_.public.cron.purge-shared-files'
 import { Route as ApiPublicCronScanTransfersRouteImport } from './routes/api_.public.cron.scan-transfers'
@@ -1377,6 +1379,11 @@ const ApiAgentLinksRoute = ApiAgentLinksRouteImport.update({
   path: '/api/agent/links',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAgentWorkspacesRoute = ApiAgentWorkspacesRouteImport.update({
+  id: '/api_/agent/workspaces',
+  path: '/api/agent/workspaces',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api_/auth/$',
   path: '/api/auth/$',
@@ -1830,6 +1837,12 @@ const ApiPublicCronPurgeAccountsRoute =
   ApiPublicCronPurgeAccountsRouteImport.update({
     id: '/api_/public/cron/purge-accounts',
     path: '/api/public/cron/purge-accounts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCronPurgeAgentWorkspacesRoute =
+  ApiPublicCronPurgeAgentWorkspacesRouteImport.update({
+    id: '/api_/public/cron/purge-agent-workspaces',
+    path: '/api/public/cron/purge-agent-workspaces',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicCronPurgeAltchaRoute =
@@ -2333,6 +2346,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/mail-check': typeof ApiAdminMailCheckRoute
   '/api/agent/identity': typeof ApiAgentIdentityRoute
   '/api/agent/links': typeof ApiAgentLinksRoute
+  '/api/agent/workspaces': typeof ApiAgentWorkspacesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/badge/verify': typeof ApiBadgeVerifyRoute
   '/api/bunq/check-status': typeof ApiBunqCheckStatusRoute
@@ -2419,6 +2433,7 @@ export interface FileRoutesByFullPath {
   '/api/public/cron/cleanup-assets': typeof ApiPublicCronCleanupAssetsRoute
   '/api/public/cron/deliver-webhooks': typeof ApiPublicCronDeliverWebhooksRoute
   '/api/public/cron/purge-accounts': typeof ApiPublicCronPurgeAccountsRoute
+  '/api/public/cron/purge-agent-workspaces': typeof ApiPublicCronPurgeAgentWorkspacesRoute
   '/api/public/cron/purge-altcha': typeof ApiPublicCronPurgeAltchaRoute
   '/api/public/cron/purge-shared-files': typeof ApiPublicCronPurgeSharedFilesRoute
   '/api/public/cron/scan-transfers': typeof ApiPublicCronScanTransfersRoute
@@ -2655,6 +2670,7 @@ export interface FileRoutesByTo {
   '/api/admin/mail-check': typeof ApiAdminMailCheckRoute
   '/api/agent/identity': typeof ApiAgentIdentityRoute
   '/api/agent/links': typeof ApiAgentLinksRoute
+  '/api/agent/workspaces': typeof ApiAgentWorkspacesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/badge/verify': typeof ApiBadgeVerifyRoute
   '/api/bunq/check-status': typeof ApiBunqCheckStatusRoute
@@ -2740,6 +2756,7 @@ export interface FileRoutesByTo {
   '/api/public/cron/cleanup-assets': typeof ApiPublicCronCleanupAssetsRoute
   '/api/public/cron/deliver-webhooks': typeof ApiPublicCronDeliverWebhooksRoute
   '/api/public/cron/purge-accounts': typeof ApiPublicCronPurgeAccountsRoute
+  '/api/public/cron/purge-agent-workspaces': typeof ApiPublicCronPurgeAgentWorkspacesRoute
   '/api/public/cron/purge-altcha': typeof ApiPublicCronPurgeAltchaRoute
   '/api/public/cron/purge-shared-files': typeof ApiPublicCronPurgeSharedFilesRoute
   '/api/public/cron/scan-transfers': typeof ApiPublicCronScanTransfersRoute
@@ -2994,6 +3011,7 @@ export interface FileRoutesById {
   '/api_/admin/mail-check': typeof ApiAdminMailCheckRoute
   '/api_/agent/identity': typeof ApiAgentIdentityRoute
   '/api_/agent/links': typeof ApiAgentLinksRoute
+  '/api_/agent/workspaces': typeof ApiAgentWorkspacesRoute
   '/api_/auth/$': typeof ApiAuthSplatRoute
   '/api_/badge/verify': typeof ApiBadgeVerifyRoute
   '/api_/bunq/check-status': typeof ApiBunqCheckStatusRoute
@@ -3080,6 +3098,7 @@ export interface FileRoutesById {
   '/api_/public/cron/cleanup-assets': typeof ApiPublicCronCleanupAssetsRoute
   '/api_/public/cron/deliver-webhooks': typeof ApiPublicCronDeliverWebhooksRoute
   '/api_/public/cron/purge-accounts': typeof ApiPublicCronPurgeAccountsRoute
+  '/api_/public/cron/purge-agent-workspaces': typeof ApiPublicCronPurgeAgentWorkspacesRoute
   '/api_/public/cron/purge-altcha': typeof ApiPublicCronPurgeAltchaRoute
   '/api_/public/cron/purge-shared-files': typeof ApiPublicCronPurgeSharedFilesRoute
   '/api_/public/cron/scan-transfers': typeof ApiPublicCronScanTransfersRoute
@@ -3334,6 +3353,7 @@ export interface FileRouteTypes {
     | '/api/admin/mail-check'
     | '/api/agent/identity'
     | '/api/agent/links'
+    | '/api/agent/workspaces'
     | '/api/auth/$'
     | '/api/badge/verify'
     | '/api/bunq/check-status'
@@ -3420,6 +3440,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/cleanup-assets'
     | '/api/public/cron/deliver-webhooks'
     | '/api/public/cron/purge-accounts'
+    | '/api/public/cron/purge-agent-workspaces'
     | '/api/public/cron/purge-altcha'
     | '/api/public/cron/purge-shared-files'
     | '/api/public/cron/scan-transfers'
@@ -3656,6 +3677,7 @@ export interface FileRouteTypes {
     | '/api/admin/mail-check'
     | '/api/agent/identity'
     | '/api/agent/links'
+    | '/api/agent/workspaces'
     | '/api/auth/$'
     | '/api/badge/verify'
     | '/api/bunq/check-status'
@@ -3741,6 +3763,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/cleanup-assets'
     | '/api/public/cron/deliver-webhooks'
     | '/api/public/cron/purge-accounts'
+    | '/api/public/cron/purge-agent-workspaces'
     | '/api/public/cron/purge-altcha'
     | '/api/public/cron/purge-shared-files'
     | '/api/public/cron/scan-transfers'
@@ -3994,6 +4017,7 @@ export interface FileRouteTypes {
     | '/api_/admin/mail-check'
     | '/api_/agent/identity'
     | '/api_/agent/links'
+    | '/api_/agent/workspaces'
     | '/api_/auth/$'
     | '/api_/badge/verify'
     | '/api_/bunq/check-status'
@@ -4080,6 +4104,7 @@ export interface FileRouteTypes {
     | '/api_/public/cron/cleanup-assets'
     | '/api_/public/cron/deliver-webhooks'
     | '/api_/public/cron/purge-accounts'
+    | '/api_/public/cron/purge-agent-workspaces'
     | '/api_/public/cron/purge-altcha'
     | '/api_/public/cron/purge-shared-files'
     | '/api_/public/cron/scan-transfers'
@@ -4227,6 +4252,7 @@ export interface RootRouteChildren {
   ApiAdminMailCheckRoute: typeof ApiAdminMailCheckRoute
   ApiAgentIdentityRoute: typeof ApiAgentIdentityRoute
   ApiAgentLinksRoute: typeof ApiAgentLinksRoute
+  ApiAgentWorkspacesRoute: typeof ApiAgentWorkspacesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiBadgeVerifyRoute: typeof ApiBadgeVerifyRoute
   ApiBunqCheckStatusRoute: typeof ApiBunqCheckStatusRoute
@@ -4277,6 +4303,7 @@ export interface RootRouteChildren {
   ApiPublicCronCleanupAssetsRoute: typeof ApiPublicCronCleanupAssetsRoute
   ApiPublicCronDeliverWebhooksRoute: typeof ApiPublicCronDeliverWebhooksRoute
   ApiPublicCronPurgeAccountsRoute: typeof ApiPublicCronPurgeAccountsRoute
+  ApiPublicCronPurgeAgentWorkspacesRoute: typeof ApiPublicCronPurgeAgentWorkspacesRoute
   ApiPublicCronPurgeAltchaRoute: typeof ApiPublicCronPurgeAltchaRoute
   ApiPublicCronPurgeSharedFilesRoute: typeof ApiPublicCronPurgeSharedFilesRoute
   ApiPublicCronScanTransfersRoute: typeof ApiPublicCronScanTransfersRoute
@@ -5714,6 +5741,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentLinksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/agent/workspaces': {
+      id: '/api_/agent/workspaces'
+      path: '/api/agent/workspaces'
+      fullPath: '/api/agent/workspaces'
+      preLoaderRoute: typeof ApiAgentWorkspacesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/auth/$': {
       id: '/api_/auth/$'
       path: '/api/auth/$'
@@ -6300,6 +6334,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/cron/purge-accounts'
       fullPath: '/api/public/cron/purge-accounts'
       preLoaderRoute: typeof ApiPublicCronPurgeAccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/public/cron/purge-agent-workspaces': {
+      id: '/api_/public/cron/purge-agent-workspaces'
+      path: '/api/public/cron/purge-agent-workspaces'
+      fullPath: '/api/public/cron/purge-agent-workspaces'
+      preLoaderRoute: typeof ApiPublicCronPurgeAgentWorkspacesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api_/public/cron/purge-altcha': {
@@ -7317,6 +7358,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminMailCheckRoute: ApiAdminMailCheckRoute,
   ApiAgentIdentityRoute: ApiAgentIdentityRoute,
   ApiAgentLinksRoute: ApiAgentLinksRoute,
+  ApiAgentWorkspacesRoute: ApiAgentWorkspacesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiBadgeVerifyRoute: ApiBadgeVerifyRoute,
   ApiBunqCheckStatusRoute: ApiBunqCheckStatusRoute,
@@ -7368,6 +7410,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCronCleanupAssetsRoute: ApiPublicCronCleanupAssetsRoute,
   ApiPublicCronDeliverWebhooksRoute: ApiPublicCronDeliverWebhooksRoute,
   ApiPublicCronPurgeAccountsRoute: ApiPublicCronPurgeAccountsRoute,
+  ApiPublicCronPurgeAgentWorkspacesRoute:
+    ApiPublicCronPurgeAgentWorkspacesRoute,
   ApiPublicCronPurgeAltchaRoute: ApiPublicCronPurgeAltchaRoute,
   ApiPublicCronPurgeSharedFilesRoute: ApiPublicCronPurgeSharedFilesRoute,
   ApiPublicCronScanTransfersRoute: ApiPublicCronScanTransfersRoute,
