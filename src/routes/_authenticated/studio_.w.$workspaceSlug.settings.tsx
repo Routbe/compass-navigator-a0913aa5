@@ -212,6 +212,63 @@ function AddressCard({ ws, onDone }: { ws: WsSettings; onDone: () => void }) {
 }
 
 
+const ACTION_LABELS: Record<string, string> = {
+  "link.create": "Link/QR aangemaakt",
+  "profile_draft.update": "Profieldraft bijgewerkt",
+  "workspace.provision": "Workspace ingericht",
+};
+
+/** Chronos: the transparent timeline of everything AI agents did in this workspace, with one-click undo. */
+function ChronosCard({ ws }: { ws: WsSettings }) {
+  const q = useQuery({ queryKey: ["chronos", ws.id], queryFn: () => listWorkspaceAgentAudit({ data: { workspaceId: ws.id } }) });
+  const qc = useQueryClient();
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function revert(logId: string) {
+    setBusyId(logId);
+    try {
+      const res = await fetch(`/api/audit/revert/${logId}`, { method: "POST" });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? "Terugdraaien lukte niet.");
+      }
+      toast.success("AI-actie teruggedraaid");
+      void qc.invalidateQueries({ queryKey: ["chronos", ws.id] });
+    } catch (e) { toast.error(errText(e)); } finally { setBusyId(null); }
+  }
+
+  return (
+    <section className={card}>
+      <h2 className="font-medium">Chronos — AI-actielog</h2>
+      <p className="text-sm text-muted-foreground">
+        Elke mutatie die een gekoppelde AI-agent uitvoert verschijnt hier met een momentopname van de vorige staat.
+        Eén klik draait een ongewenste actie terug.
+      </p>
+      {q.data?.length === 0 && <p className="text-sm text-muted-foreground">Nog geen AI-acties in deze workspace.</p>}
+      {q.data && q.data.length > 0 && (
+        <ul className="divide-y divide-border">
+          {q.data.map((entry) => (
+            <li key={entry.id} className="flex items-center gap-3 py-2 text-sm">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium">{ACTION_LABELS[entry.action] ?? entry.action}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {entry.actorClientId} · {new Date(entry.createdAt).toLocaleString("nl-BE")}
+                  {entry.revertedAt && " · teruggedraaid"}
+                </p>
+              </div>
+              {canRevert(entry) && (
+                <Button variant="outline" size="sm" disabled={busyId === entry.id} onClick={() => void revert(entry.id)}>
+                  {busyId === entry.id ? "Bezig…" : "Draai terug"}
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 function DomainCard({ ws, onDone }: { ws: WsSettings; onDone: () => void }) {
   const setDomain = useServerFn(setWorkspaceDomain);
   const verify = useServerFn(verifyWorkspaceDomain);
