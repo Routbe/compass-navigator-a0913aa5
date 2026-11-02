@@ -439,36 +439,3 @@ export const deleteWorkspace = createServerFn({ method: "POST" })
   });
 
 export type WorkspaceHubState = {
-  workspaceId: string; name: string; slug: string; avatarUrl: string | null; role: WorkspaceRole; canEdit: boolean;
-  hub: WorkspaceHub;
-};
-
-/** The workspace's own Profile Hub (link-in-bio). Members read; owners, admins and editors edit. */
-export const getWorkspaceHub = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
-  .inputValidator((d) => z.object({ workspaceSlug: z.string().trim().toLowerCase().max(40) }).parse(d))
-  .handler(async ({ data, context }): Promise<WorkspaceHubState> => {
-    const { sql } = await import("@/lib/neon");
-    const { getWorkspaceRole } = await import("./workspaces.server");
-    const { readHub } = await import("./workspace-hub");
-    const { canEditWorkspaceHub } = await import("./workspace-rules");
-    const ws = ((await sql`select id, name, slug, avatar_url, public_profile from public.workspaces where slug = ${data.workspaceSlug} limit 1`) as
-      { id: string; name: string; slug: string; avatar_url: string | null; public_profile: unknown }[])[0];
-    const role = ws ? await getWorkspaceRole(context.userId, ws.id) : null;
-    if (!ws || !role) throw new Error("Forbidden");
-    return { workspaceId: ws.id, name: ws.name, slug: ws.slug, avatarUrl: ws.avatar_url, role, canEdit: canEditWorkspaceHub(role), hub: readHub(ws.public_profile) };
-  });
-
-export const saveWorkspaceHub = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
-  .inputValidator((d) => z.object({ workspaceId: uuid, hub: workspaceHubSchema }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { sql } = await import("@/lib/neon");
-    const { getWorkspaceRole } = await import("./workspaces.server");
-    const { canEditWorkspaceHub } = await import("./workspace-rules");
-    if (!canEditWorkspaceHub(await getWorkspaceRole(context.userId, data.workspaceId))) {
-      throw new Error("Alleen eigenaars, admins en editors bewerken de Profiel Hub van deze workspace.");
-    }
-    await sql`update public.workspaces set public_profile = ${JSON.stringify(data.hub)}::jsonb where id = ${data.workspaceId}`;
-    return { ok: true as const, hub: data.hub };
-  });
