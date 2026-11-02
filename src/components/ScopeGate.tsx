@@ -18,8 +18,9 @@ export function ScopeGate({ workspaceSlug, feature }: { workspaceSlug: string | 
       .then(() => {
         if (!alive) return;
         qc.clear();
-        // A workspace has its own Profile Hub; never open the personal one in workspace mode.
-        const to = workspaceSlug && feature === "studio" ? `/studio/w/${encodeURIComponent(workspaceSlug)}/hub` : SCOPED_FEATURES[feature];
+        // A workspace opens the full Studio canvas (parity with the personal Studio);
+        // the simplified link-in-bio editor stays available at /studio/w/<slug>/hub.
+        const to = workspaceSlug && feature === "studio" ? `/studio/w/${encodeURIComponent(workspaceSlug)}/studio` : SCOPED_FEATURES[feature];
         void navigate({ to: to as never, replace: true });
       })
       .catch(() => alive && setError(true));
