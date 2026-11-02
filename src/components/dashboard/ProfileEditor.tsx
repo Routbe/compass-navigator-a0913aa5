@@ -472,7 +472,13 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
     // De URL-balk hoort bij het profiel dat je nú bewerkt.
     prefer: alias ? "alias" : "root",
   });
-  const publicPath = live.path ?? styledProfilePath(claimed ?? "", urlStyle);
+  // Workspace-URL: het geverifieerde bedrijfsdomein (rout.be/<domein>) wint,
+  // anders de vaste workspace-slug. Één bron van waarheid, nooit lokale state.
+  const publicPath = isWorkspace
+    ? wsDomain?.verified
+      ? `/${wsDomain.name}`
+      : `/w/${wsCanvas?.slug ?? workspaceSlug ?? ""}`
+    : (live.path ?? styledProfilePath(claimed ?? "", urlStyle));
   useEffect(() => { onPagesChange?.({ tipEnabled: !alias && verified && tipEnabled, handle: normalized }); }, [alias, verified, tipEnabled, normalized, onPagesChange]);
 
   // De "Domains & Bluesky"-tab is verified-only voor personen; een workspace
