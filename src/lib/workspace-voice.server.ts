@@ -74,10 +74,33 @@ export class VoiceError extends Error {
   }
 }
 
+/** One ElevenLabs round-trip. The plaintext key never leaves this function's scope. */
+async function callElevenLabs(apiKey: string, voiceId: string, text: string): Promise<{ audio: ArrayBuffer; contentType: string }> {
+  const response = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=${ELEVENLABS_OUTPUT_FORMAT}`,
+    {
+      method: "POST",
+      headers: { "xi-api-key": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        model_id: ELEVENLABS_MODEL,
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+      }),
+    },
+  );
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    console.error(`[workspace-voice] ElevenLabs ${response.status}: ${body.slice(0, 300)}`);
+    if (response.status === 401) throw new VoiceError("De ElevenLabs-sleutel van deze workspace wordt geweigerd.", 412);
+    if (response.status === 429) throw new VoiceError("Het ElevenLabs-quotum van deze workspace is op.", 429);
+    throw new VoiceError("Spraakgeneratie is tijdelijk niet beschikbaar.", 502);
+  }
+  return { audio: await response.arrayBuffer(), contentType: "audio/mpeg" };
+}
+
 /**
- * Synthesize speech for a workspace. Any workspace member (or an agent acting
- * for one) may call this; the key is opened in memory and never returned.
- * Returns the MP3 bytes from ElevenLabs.
+ * Synthesize speech for a workspace member (Studio preview). The key is
+ * opened in memory and never returned. Returns the MP3 bytes from ElevenLabs.
  */
 export async function synthesizeWorkspaceSpeech(
   userId: string,
@@ -94,26 +117,28 @@ export async function synthesizeWorkspaceSpeech(
 
     const { open } = await import("./crypto/secretbox.server");
     const apiKey = await open(row.api_key_ciphertext, row.api_key_iv, aad(input.workspaceId));
-
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=${ELEVENLABS_OUTPUT_FORMAT}`,
-      {
-        method: "POST",
-        headers: { "xi-api-key": apiKey, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: input.text,
-          model_id: ELEVENLABS_MODEL,
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
-        }),
-      },
-    );
-    if (!response.ok) {
-      const body = await response.text().catch(() => "");
-      console.error(`[workspace-voice] ElevenLabs ${response.status}: ${body.slice(0, 300)}`);
-      if (response.status === 401) throw new VoiceError("De ElevenLabs-sleutel van deze workspace wordt geweigerd.", 412);
-      if (response.status === 429) throw new VoiceError("Het ElevenLabs-quotum van deze workspace is op.", 429);
-      throw new VoiceError("Spraakgeneratie is tijdelijk niet beschikbaar.", 502);
-    }
-    return { audio: await response.arrayBuffer(), contentType: "audio/mpeg" };
+    return callElevenLabs(apiKey, voiceId, input.text);
   });
+}
+
+/**
+ * Public spoken introduction for a published Profile Hub. Reads through the
+ * definer function `rout_public_workspace_voice`, which only returns a row
+ * when the hub is published, has an intro text and a configured key — so an
+ * unpublished or keyless workspace is a clean 404, never a leaked ciphertext.
+ */
+export async function synthesizePublicWorkspaceVoice(slug: string): Promise<{ audio: ArrayBuffer; contentType: string }> {
+  const rows = (await sql`select * from public.rout_public_workspace_voice(${slug})`) as {
+    workspace_id: string;
+    intro_text: string;
+    api_key_ciphertext: string;
+    api_key_iv: string;
+    default_voice_id: string;
+  }[];
+  const row = rows[0];
+  if (!row) throw new VoiceError("Deze workspace heeft geen ingesproken introductie.", 404);
+
+  const { open } = await import("./crypto/secretbox.server");
+  const apiKey = await open(row.api_key_ciphertext, row.api_key_iv, aad(row.workspace_id));
+  return callElevenLabs(apiKey, row.default_voice_id, row.intro_text);
 }
