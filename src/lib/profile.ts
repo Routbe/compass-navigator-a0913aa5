@@ -819,6 +819,12 @@ export const BLOCK_KINDS: {
     placeholder: "Plak een YouTube-, Spotify- of PDF-link…",
   },
   {
+    kind: "audio_player",
+    label: "Audio-speler (universeel)",
+    category: "media" as const,
+    placeholder: "Link naar een audiobestand",
+  },
+  {
     kind: "contact_form",
     label: "Contactformulier / E-mailcapture (ROUT native)",
     category: "contact" as const,
@@ -895,6 +901,7 @@ export const BLOCK_TABS: {
       "link",
       "website",
       "media_embed",
+      "audio_player",
       "media_gallery",
       "text",
       "spacer",
@@ -1264,6 +1271,7 @@ export function blockHref(block: ProfileBlock): string {
     case "booking_request":
     case "media_gallery":
     case "media_embed":
+    case "audio_player":
     case "social_feed":
     case "contact_form":
     case "feedback":
@@ -1298,6 +1306,7 @@ export const isWidgetBlock = (kind: string) =>
   kind === "booking_request" ||
   kind === "media_gallery" ||
   kind === "media_embed" ||
+  kind === "audio_player" ||
   kind === "social_feed" ||
   kind === "contact_form" ||
   kind === "live_poll" ||

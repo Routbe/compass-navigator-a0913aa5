@@ -53,6 +53,7 @@ export const COMPONENT_LIBRARY: LibraryGroup[] = [
       { kind: "video", tag: "video", label: "Video embed", note: "YouTube, Vimeo of TikTok", isNew: true },
       { kind: "media_gallery", tag: "foto", label: "Afbeelding / Galerij", note: "Foto's in een raster", isNew: true },
       { kind: "social_feed", tag: "socials", label: "Bluesky / Mastodon posts", note: "Je nieuwste posts automatisch op je profiel", isNew: true },
+      { kind: "audio_player", tag: "audio", label: "Audio-speler", note: "MP3, podcast of ingesproken introductie", isNew: true },
       { kind: "spotify", tag: "audio", label: "Spotify / Audio embed", note: "Track, album of podcast", isNew: true },
       { kind: "soundcloud", tag: "audio", label: "SoundCloud embed", note: "Track of profiel" },
       { kind: "widget:youtube", tag: "video", label: "YouTube Kaart", note: "Kanaal, abonnees en nieuwste video's", isNew: true },

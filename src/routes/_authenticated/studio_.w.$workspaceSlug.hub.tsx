@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowDown, ArrowUp, ExternalLink, Loader2, Play, Plus, Settings, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, Plus, Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { DocHelpLink } from "@/components/seo/DocHelpLink";
 import { WorkspaceHubView } from "@/components/workspace/WorkspaceHubView";
 import { activateScopeFromUrl, getWorkspaceHub, saveWorkspaceHub } from "@/lib/workspaces.functions";
-import { getWorkspaceVoiceSettings, speakWorkspaceVoice } from "@/lib/workspace-voice.functions";
-import { HUB_LIMITS, hubLinkSchema, type WorkspaceHub } from "@/lib/workspace-hub";
+import { HUB_LIMITS, hubAudioSchema, hubLinkSchema, type WorkspaceHub } from "@/lib/workspace-hub";
 import { ROLE_LABELS } from "@/lib/workspace-rules";
 
 export const Route = createFileRoute("/_authenticated/studio_/w/$workspaceSlug/hub")({
@@ -142,13 +141,11 @@ function WorkspaceHubPage() {
             <Textarea aria-label="Over de workspace" placeholder="Wie zijn jullie en wat doen jullie?" rows={4} maxLength={HUB_LIMITS.bio} value={hub.bio} disabled={!edit} onChange={(e) => setHub({ ...hub, bio: e.target.value })} />
           </section>
 
-          <VoiceIntroSection
-            workspaceId={ws.workspaceId}
+          <AudioBlockSection
             slug={ws.slug}
             edit={edit}
-            busy={busy}
-            text={hub.voiceIntro}
-            onChange={(voiceIntro) => setHub({ ...hub, voiceIntro })}
+            audio={hub.audio}
+            onChange={(audio) => setHub({ ...hub, audio })}
           />
 
           <section className={card}>
@@ -199,67 +196,49 @@ function WorkspaceHubPage() {
   );
 }
 
-/** Spoken introduction: text in the workspace's ElevenLabs voice, playable on the public Profile Hub. */
-function VoiceIntroSection({
-  workspaceId,
+/** Universal audio block: any hosted audio URL (S3/Storage, podcast, generated MP3) — no provider keys. */
+function AudioBlockSection({
   slug,
   edit,
-  busy,
-  text,
+  audio,
   onChange,
 }: {
-  workspaceId: string;
   slug: string;
   edit: boolean;
-  busy: boolean;
-  text: string;
-  onChange: (value: string) => void;
+  audio: WorkspaceHub["audio"];
+  onChange: (value: WorkspaceHub["audio"]) => void;
 }) {
-  const speak = useServerFn(speakWorkspaceVoice);
-  const voice = useQuery({
-    queryKey: ["workspace-voice", workspaceId],
-    queryFn: () => getWorkspaceVoiceSettings({ data: { workspaceId } }),
-    retry: false,
-  });
-  const [previewing, setPreviewing] = useState(false);
+  const [title, setTitle] = useState(audio?.title ?? "");
+  const [url, setUrl] = useState(audio?.url ?? "");
+  const [caption, setCaption] = useState(audio?.caption ?? "");
 
-  const preview = async () => {
-    if (!text.trim()) return void toast.error("Schrijf eerst een introductietekst.");
-    setPreviewing(true);
-    try {
-      const r = await speak({ data: { workspace_id: workspaceId, text: text.trim() } });
-      await new Audio(`data:${r.contentType};base64,${r.audioBase64}`).play();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Preview genereren lukte niet.");
-    } finally {
-      setPreviewing(false);
+  const apply = () => {
+    if (!url.trim()) {
+      onChange(null);
+      toast.success("Audioblok verwijderd. Vergeet niet op te slaan.");
+      return;
     }
+    const parsed = hubAudioSchema.safeParse({ title, url, caption });
+    if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message ?? "Ongeldige audio-link.");
+    onChange(parsed.data);
+    toast.success("Audioblok bijgewerkt. Vergeet niet op te slaan.");
   };
 
   return (
     <section className={card}>
-      <h2 className="font-medium">Ingesproken introductie</h2>
+      <h2 className="font-medium">Audioblok</h2>
       <p className="text-sm text-muted-foreground">
-        Bezoekers van rout.be/w/{slug} kunnen deze tekst beluisteren in de ElevenLabs-stem van de workspace.
-        {voice.data?.configured
-          ? " Er is een stem gekoppeld."
-          : <> Koppel eerst een sleutel en Voice ID via <Link to="/studio/w/$workspaceSlug/settings" params={{ workspaceSlug: slug }} className="underline">Instellingen</Link>.</>}
+        Toon een minimalistische audio-speler op rout.be/w/{slug}. Verwijs naar een gehost audiobestand
+        (bijv. je eigen storage of een extern gegenereerde MP3) — ROUT beheert geen externe API-sleutels.
       </p>
-      <Textarea
-        aria-label="Ingesproken introductie"
-        placeholder="Bijv. Hallo, wij zijn Studio Nova — een digitaal bureau uit Gent…"
-        rows={3}
-        maxLength={HUB_LIMITS.voiceIntro}
-        value={text}
-        disabled={!edit}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="button" variant="outline" size="sm" disabled={!edit || busy || previewing || !voice.data?.configured || !text.trim()} onClick={() => void preview()}>
-          {previewing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Beluister preview
-        </Button>
-        <span className="text-xs text-muted-foreground">{text.length}/{HUB_LIMITS.voiceIntro}</span>
-      </div>
+      <Input aria-label="Titel van het audioblok" placeholder="Titel, bv. Inspiratie & Introductie" maxLength={HUB_LIMITS.audioTitle} value={title} disabled={!edit} onChange={(e) => setTitle(e.target.value)} />
+      <Input aria-label="Audio-URL" placeholder="cdn.jouwdomein.be/intro.mp3" maxLength={HUB_LIMITS.linkUrl} value={url} disabled={!edit} onChange={(e) => setUrl(e.target.value)} />
+      <Textarea aria-label="Bijschrift of transcript" placeholder="Optioneel bijschrift of transcript" rows={2} maxLength={HUB_LIMITS.audioCaption} value={caption} disabled={!edit} onChange={(e) => setCaption(e.target.value)} />
+      {edit && (
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={apply}>{url.trim() ? "Audioblok instellen" : "Audioblok verwijderen"}</Button>
+        </div>
+      )}
     </section>
   );
 }

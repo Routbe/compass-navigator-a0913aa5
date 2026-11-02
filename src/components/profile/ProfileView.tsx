@@ -50,6 +50,7 @@ import { BookingCard } from "@/components/profile/BookingCard";
 import { parseBookingConfig } from "@/lib/booking";
 import { GalleryCard } from "@/components/profile/GalleryCard";
 import { MediaEmbedCard } from "@/components/profile/MediaEmbedCard";
+import { AudioBlockCard } from "@/components/profile/AudioBlockCard";
 import { ContactFormCard } from "@/components/profile/ContactFormCard";
 import { ProfileEventList } from "@/components/profile/EventListCard";
 import { PollCard } from "@/components/profile/PollCard";
@@ -659,6 +660,8 @@ export function ProfileView({
                 <SocialFeedCard key={b.id} value={b.value} style={styleFor(b.kind)} profile={profile.username ?? ""} blockId={String(b.id)} />
               ) : b.kind === "media_embed" ? (
                 <MediaEmbedCard key={b.id} value={b.value} style={styleFor(b.kind)} />
+              ) : b.kind === "audio_player" ? (
+                <AudioBlockCard key={b.id} value={b.value} style={styleFor(b.kind)} />
               ) : b.kind === "contact_form" ? (
                 <ContactFormCard
                   key={b.id}

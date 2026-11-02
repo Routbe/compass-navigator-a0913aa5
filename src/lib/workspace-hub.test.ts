@@ -19,15 +19,16 @@ describe("workspace hub", () => {
     expect(readHub(null).links).toEqual([]);
   });
 
-  it("voice intro defaults to empty and is capped at 500 characters", () => {
-    expect(readHub(null).voiceIntro).toBe("");
-    expect(workspaceHubSchema.parse({ voiceIntro: "Hallo, wij zijn Studio Nova." }).voiceIntro).toBe("Hallo, wij zijn Studio Nova.");
-    expect(workspaceHubSchema.safeParse({ voiceIntro: "x".repeat(501) }).success).toBe(false);
+  it("audio block defaults to null and stores only an https pointer", () => {
+    expect(readHub(null).audio).toBeNull();
+    const hub = workspaceHubSchema.parse({ audio: { title: "Introductie", url: "cdn.acme.be/intro.mp3", caption: "Hallo!" } });
+    expect(hub.audio?.url).toBe("https://cdn.acme.be/intro.mp3");
+    expect(workspaceHubSchema.safeParse({ audio: { title: "x", url: "javascript:alert(1)", caption: "" } }).success).toBe(false);
   });
 
-  it("older stored hubs without a voice intro still read cleanly", () => {
-    const legacy = readHub({ tagline: "Studio", bio: "Wij maken sites.", links: [], published: true });
-    expect(legacy.voiceIntro).toBe("");
+  it("older stored hubs (with a legacy voiceIntro field) still read cleanly", () => {
+    const legacy = readHub({ tagline: "Studio", bio: "Wij maken sites.", links: [], voiceIntro: "oud", published: true });
+    expect(legacy.audio).toBeNull();
     expect(legacy.published).toBe(true);
   });
 });

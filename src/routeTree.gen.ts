@@ -228,7 +228,6 @@ import { Route as ApiSnapchatStartRouteImport } from './routes/api_.snapchat.sta
 import { Route as ApiSpotifyStartRouteImport } from './routes/api_.spotify.start'
 import { Route as ApiUploadPresignRouteImport } from './routes/api_.upload.presign'
 import { Route as ApiV1PresenceRouteImport } from './routes/api_.v1.presence'
-import { Route as ApiWorkspaceVoiceRouteImport } from './routes/api_.workspace.voice'
 import { Route as ApiYoutubeStartRouteImport } from './routes/api_.youtube.start'
 import { Route as AuthMastodonCallbackRouteImport } from './routes/auth_.mastodon.callback'
 import { Route as ClaimWorkspaceTokenRouteImport } from './routes/claim_.workspace.$token'
@@ -324,7 +323,6 @@ import { Route as ApiPublicSteamHandleRouteImport } from './routes/api_.public.s
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api_.public.telegram.webhook'
 import { Route as ApiPublicWeatherWebhookTokenRouteImport } from './routes/api_.public.weather-webhook.$token'
 import { Route as ApiPublicWebhooksBankingRouteImport } from './routes/api_.public.webhooks.banking'
-import { Route as ApiPublicWorkspaceVoiceSlugRouteImport } from './routes/api_.public.workspace-voice.$slug'
 import { Route as ApiPublicYoutubeCallbackRouteImport } from './routes/api_.public.youtube.callback'
 import { Route as ApiPublicYoutubeCardRouteImport } from './routes/api_.public.youtube.card'
 import { Route as ApiPublicYoutubePushRouteImport } from './routes/api_.public.youtube.push'
@@ -1477,11 +1475,6 @@ const ApiV1PresenceRoute = ApiV1PresenceRouteImport.update({
   path: '/api/v1/presence',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiWorkspaceVoiceRoute = ApiWorkspaceVoiceRouteImport.update({
-  id: '/api_/workspace/voice',
-  path: '/api/workspace/voice',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiYoutubeStartRoute = ApiYoutubeStartRouteImport.update({
   id: '/api_/youtube/start',
   path: '/api/youtube/start',
@@ -2009,12 +2002,6 @@ const ApiPublicWebhooksBankingRoute =
     path: '/api/public/webhooks/banking',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicWorkspaceVoiceSlugRoute =
-  ApiPublicWorkspaceVoiceSlugRouteImport.update({
-    id: '/api_/public/workspace-voice/$slug',
-    path: '/api/public/workspace-voice/$slug',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicYoutubeCallbackRoute =
   ApiPublicYoutubeCallbackRouteImport.update({
     id: '/api_/public/youtube/callback',
@@ -2384,7 +2371,6 @@ export interface FileRoutesByFullPath {
   '/api/spotify/start': typeof ApiSpotifyStartRoute
   '/api/upload/presign': typeof ApiUploadPresignRoute
   '/api/v1/presence': typeof ApiV1PresenceRoute
-  '/api/workspace/voice': typeof ApiWorkspaceVoiceRoute
   '/api/youtube/start': typeof ApiYoutubeStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/claim/workspace/$token': typeof ClaimWorkspaceTokenRoute
@@ -2482,7 +2468,6 @@ export interface FileRoutesByFullPath {
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
   '/api/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
-  '/api/public/workspace-voice/$slug': typeof ApiPublicWorkspaceVoiceSlugRoute
   '/api/public/youtube/callback': typeof ApiPublicYoutubeCallbackRoute
   '/api/public/youtube/card': typeof ApiPublicYoutubeCardRoute
   '/api/public/youtube/push': typeof ApiPublicYoutubePushRoute
@@ -2711,7 +2696,6 @@ export interface FileRoutesByTo {
   '/api/spotify/start': typeof ApiSpotifyStartRoute
   '/api/upload/presign': typeof ApiUploadPresignRoute
   '/api/v1/presence': typeof ApiV1PresenceRoute
-  '/api/workspace/voice': typeof ApiWorkspaceVoiceRoute
   '/api/youtube/start': typeof ApiYoutubeStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/claim/workspace/$token': typeof ClaimWorkspaceTokenRoute
@@ -2808,7 +2792,6 @@ export interface FileRoutesByTo {
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
   '/api/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
-  '/api/public/workspace-voice/$slug': typeof ApiPublicWorkspaceVoiceSlugRoute
   '/api/public/youtube/callback': typeof ApiPublicYoutubeCallbackRoute
   '/api/public/youtube/card': typeof ApiPublicYoutubeCardRoute
   '/api/public/youtube/push': typeof ApiPublicYoutubePushRoute
@@ -3055,7 +3038,6 @@ export interface FileRoutesById {
   '/api_/spotify/start': typeof ApiSpotifyStartRoute
   '/api_/upload/presign': typeof ApiUploadPresignRoute
   '/api_/v1/presence': typeof ApiV1PresenceRoute
-  '/api_/workspace/voice': typeof ApiWorkspaceVoiceRoute
   '/api_/youtube/start': typeof ApiYoutubeStartRoute
   '/auth_/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/claim_/workspace/$token': typeof ClaimWorkspaceTokenRoute
@@ -3153,7 +3135,6 @@ export interface FileRoutesById {
   '/api_/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api_/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
   '/api_/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
-  '/api_/public/workspace-voice/$slug': typeof ApiPublicWorkspaceVoiceSlugRoute
   '/api_/public/youtube/callback': typeof ApiPublicYoutubeCallbackRoute
   '/api_/public/youtube/card': typeof ApiPublicYoutubeCardRoute
   '/api_/public/youtube/push': typeof ApiPublicYoutubePushRoute
@@ -3400,7 +3381,6 @@ export interface FileRouteTypes {
     | '/api/spotify/start'
     | '/api/upload/presign'
     | '/api/v1/presence'
-    | '/api/workspace/voice'
     | '/api/youtube/start'
     | '/auth/mastodon/callback'
     | '/claim/workspace/$token'
@@ -3498,7 +3478,6 @@ export interface FileRouteTypes {
     | '/api/public/telegram/webhook'
     | '/api/public/weather-webhook/$token'
     | '/api/public/webhooks/banking'
-    | '/api/public/workspace-voice/$slug'
     | '/api/public/youtube/callback'
     | '/api/public/youtube/card'
     | '/api/public/youtube/push'
@@ -3727,7 +3706,6 @@ export interface FileRouteTypes {
     | '/api/spotify/start'
     | '/api/upload/presign'
     | '/api/v1/presence'
-    | '/api/workspace/voice'
     | '/api/youtube/start'
     | '/auth/mastodon/callback'
     | '/claim/workspace/$token'
@@ -3824,7 +3802,6 @@ export interface FileRouteTypes {
     | '/api/public/telegram/webhook'
     | '/api/public/weather-webhook/$token'
     | '/api/public/webhooks/banking'
-    | '/api/public/workspace-voice/$slug'
     | '/api/public/youtube/callback'
     | '/api/public/youtube/card'
     | '/api/public/youtube/push'
@@ -4070,7 +4047,6 @@ export interface FileRouteTypes {
     | '/api_/spotify/start'
     | '/api_/upload/presign'
     | '/api_/v1/presence'
-    | '/api_/workspace/voice'
     | '/api_/youtube/start'
     | '/auth_/mastodon/callback'
     | '/claim_/workspace/$token'
@@ -4168,7 +4144,6 @@ export interface FileRouteTypes {
     | '/api_/public/telegram/webhook'
     | '/api_/public/weather-webhook/$token'
     | '/api_/public/webhooks/banking'
-    | '/api_/public/workspace-voice/$slug'
     | '/api_/public/youtube/callback'
     | '/api_/public/youtube/card'
     | '/api_/public/youtube/push'
@@ -4308,7 +4283,6 @@ export interface RootRouteChildren {
   ApiSpotifyStartRoute: typeof ApiSpotifyStartRoute
   ApiUploadPresignRoute: typeof ApiUploadPresignRoute
   ApiV1PresenceRoute: typeof ApiV1PresenceRoute
-  ApiWorkspaceVoiceRoute: typeof ApiWorkspaceVoiceRoute
   ApiYoutubeStartRoute: typeof ApiYoutubeStartRoute
   AuthMastodonCallbackRoute: typeof AuthMastodonCallbackRoute
   ClaimWorkspaceTokenRoute: typeof ClaimWorkspaceTokenRoute
@@ -4370,7 +4344,6 @@ export interface RootRouteChildren {
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicWeatherWebhookTokenRoute: typeof ApiPublicWeatherWebhookTokenRoute
   ApiPublicWebhooksBankingRoute: typeof ApiPublicWebhooksBankingRoute
-  ApiPublicWorkspaceVoiceSlugRoute: typeof ApiPublicWorkspaceVoiceSlugRoute
   ApiPublicYoutubeCallbackRoute: typeof ApiPublicYoutubeCallbackRoute
   ApiPublicYoutubeCardRoute: typeof ApiPublicYoutubeCardRoute
   ApiPublicYoutubePushRoute: typeof ApiPublicYoutubePushRoute
@@ -5914,13 +5887,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1PresenceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api_/workspace/voice': {
-      id: '/api_/workspace/voice'
-      path: '/api/workspace/voice'
-      fullPath: '/api/workspace/voice'
-      preLoaderRoute: typeof ApiWorkspaceVoiceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api_/youtube/start': {
       id: '/api_/youtube/start'
       path: '/api/youtube/start'
@@ -6584,13 +6550,6 @@ declare module '@tanstack/react-router' {
       path: '/api/public/webhooks/banking'
       fullPath: '/api/public/webhooks/banking'
       preLoaderRoute: typeof ApiPublicWebhooksBankingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api_/public/workspace-voice/$slug': {
-      id: '/api_/public/workspace-voice/$slug'
-      path: '/api/public/workspace-voice/$slug'
-      fullPath: '/api/public/workspace-voice/$slug'
-      preLoaderRoute: typeof ApiPublicWorkspaceVoiceSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api_/public/youtube/callback': {
@@ -7438,7 +7397,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSpotifyStartRoute: ApiSpotifyStartRoute,
   ApiUploadPresignRoute: ApiUploadPresignRoute,
   ApiV1PresenceRoute: ApiV1PresenceRoute,
-  ApiWorkspaceVoiceRoute: ApiWorkspaceVoiceRoute,
   ApiYoutubeStartRoute: ApiYoutubeStartRoute,
   AuthMastodonCallbackRoute: AuthMastodonCallbackRoute,
   ClaimWorkspaceTokenRoute: ClaimWorkspaceTokenRoute,
@@ -7502,7 +7460,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicWeatherWebhookTokenRoute: ApiPublicWeatherWebhookTokenRoute,
   ApiPublicWebhooksBankingRoute: ApiPublicWebhooksBankingRoute,
-  ApiPublicWorkspaceVoiceSlugRoute: ApiPublicWorkspaceVoiceSlugRoute,
   ApiPublicYoutubeCallbackRoute: ApiPublicYoutubeCallbackRoute,
   ApiPublicYoutubeCardRoute: ApiPublicYoutubeCardRoute,
   ApiPublicYoutubePushRoute: ApiPublicYoutubePushRoute,
