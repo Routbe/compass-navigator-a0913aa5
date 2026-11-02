@@ -438,4 +438,6 @@ export const deleteWorkspace = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
-export type WorkspaceHubState = {
+// De vereenvoudigde hub-editor (getWorkspaceHub/saveWorkspaceHub) is verwijderd:
+// één Studio-engine — workspaces bewerken via de gedeelde ProfileEditor
+// (workspace-studio.functions.ts) en publiceren naar public_profile.studio.
