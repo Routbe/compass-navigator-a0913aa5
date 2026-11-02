@@ -81,6 +81,17 @@ export const Route = createFileRoute("/api_/agent/profile/draft")({
               }
               throw error;
             }
+            const { recordAgentMutation } = await import("@/lib/agent/chronos.server");
+            await recordAgentMutation({
+              workspaceId: null,
+              userId: agent.userId,
+              clientId: agent.clientId,
+              action: "profile_draft.update",
+              targetTable: "profile_drafts",
+              targetId: space,
+              previousState: { fields: previousFields },
+              newState: { space, fields },
+            });
             const link = await humanActionLink(request, "/studio");
             return humanActionRequired({
               action: "publish_profile",
