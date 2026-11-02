@@ -109,6 +109,7 @@ function WorkspaceSettingsPage() {
         </div>
       </section>
 
+      {manage && <ChronosCard ws={ws} />}
       {manage && <DomainCard ws={ws} onDone={refresh} />}
       {ws.role === "owner" && <DangerZone ws={ws} />}
     </main>
