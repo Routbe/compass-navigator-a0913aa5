@@ -22,6 +22,9 @@ export type WorkspaceStudioRow = {
   plan: string;
   role: WorkspaceRole;
   publicProfile: unknown;
+  /** Claimed business domain (rout.be/<domain>) and its DNS verification. */
+  domain: string | null;
+  domainVerified: boolean;
 };
 
 function meta(row: Row): DraftMeta {
@@ -48,7 +51,7 @@ function pendingMigration(error: unknown): never {
 /** Workspace by slug plus the caller's role; null when not a member. */
 export async function readWorkspaceForStudio(userId: string, slug: string): Promise<WorkspaceStudioRow | null> {
   const rows = (await sql`
-    select w.id, w.name, w.slug, w.avatar_url, w.plan, w.public_profile, m.role::text as role
+    select w.id, w.name, w.slug, w.avatar_url, w.plan, w.public_profile, w.domain, w.domain_verified_at, m.role::text as role
       from public.workspaces w
       join public.workspace_members m on m.workspace_id = w.id and m.user_id = ${userId}
      where w.slug = ${slug.toLowerCase()}
@@ -64,6 +67,8 @@ export async function readWorkspaceForStudio(userId: string, slug: string): Prom
     plan: String(r["plan"] ?? "free"),
     role: r["role"] as WorkspaceRole,
     publicProfile: r["public_profile"],
+    domain: (r["domain"] as string | null) ?? null,
+    domainVerified: Boolean(r["domain_verified_at"]),
   };
 }
 

@@ -19,7 +19,7 @@ export function ScopeGate({ workspaceSlug, feature }: { workspaceSlug: string | 
         if (!alive) return;
         qc.clear();
         // A workspace opens the full Studio canvas (parity with the personal Studio);
-        // the simplified link-in-bio editor stays available at /studio/w/<slug>/hub.
+        // Eén Studio-engine: de workspace-studio is de volledige ProfileEditor.
         const to = workspaceSlug && feature === "studio" ? `/studio/w/${encodeURIComponent(workspaceSlug)}/studio` : SCOPED_FEATURES[feature];
         void navigate({ to: to as never, replace: true });
       })

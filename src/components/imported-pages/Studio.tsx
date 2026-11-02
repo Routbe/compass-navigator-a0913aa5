@@ -73,7 +73,7 @@ export default function Studio() {
     ? workspaceList.find((w) => w && w.id === ctxData.activeWorkspaceId)
     : undefined;
   useEffect(() => {
-    if (activeWorkspace) nav(`/studio/w/${encodeURIComponent(activeWorkspace.slug)}/hub`, { replace: true });
+    if (activeWorkspace) nav(`/studio/w/${encodeURIComponent(activeWorkspace.slug)}/studio`, { replace: true });
   }, [activeWorkspace, nav]);
 
   useEffect(() => {

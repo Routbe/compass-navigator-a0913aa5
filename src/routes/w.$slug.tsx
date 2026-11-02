@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { getPublicWorkspace } from "@/lib/workspace-public.functions";
+import { workspaceProfileRecord } from "@/lib/workspace-studio";
 import { WorkspaceHubView } from "@/components/workspace/WorkspaceHubView";
+import { ProfileView } from "@/components/profile/ProfileView";
 
 export const Route = createFileRoute("/w/$slug")({
   loader: async ({ params }) => {
@@ -12,7 +14,7 @@ export const Route = createFileRoute("/w/$slug")({
   head: ({ loaderData }) => {
     const title = loaderData ? `${loaderData.name} op ROUT` : "Workspace niet gevonden — ROUT";
     const description = loaderData
-      ? (loaderData.hub?.tagline || `Officiële ROUT-pagina van ${loaderData.name}: links, QR-codes en contact.`)
+      ? (loaderData.studio?.tagline || loaderData.hub?.tagline || `Officiële ROUT-pagina van ${loaderData.name}: links, QR-codes en contact.`)
       : "Deze workspace bestaat niet of is niet openbaar.";
     return {
       meta: [
@@ -31,6 +33,16 @@ export const Route = createFileRoute("/w/$slug")({
 
 function WorkspacePage() {
   const ws = Route.useLoaderData();
+  // Eén Studio-engine: de gepubliceerde Studio-pagina rendert met exact
+  // dezelfde ProfileView als een persoonlijk profiel. De legacy hub-view
+  // blijft alleen als terugval voor workspaces die nog nooit publiceerden.
+  if (ws.studio) {
+    return (
+      <main className="min-h-screen bg-background">
+        <ProfileView profile={workspaceProfileRecord(ws.slug, ws.studio)} free={!ws.domainVerified} />
+      </main>
+    );
+  }
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16">
       <WorkspaceHubView name={ws.name} slug={ws.slug} avatarUrl={ws.avatarUrl} hub={ws.hub}>

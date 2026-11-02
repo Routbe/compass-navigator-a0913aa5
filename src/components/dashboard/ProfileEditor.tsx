@@ -140,6 +140,7 @@ import {
   publishAliasProfile,
 } from "@/lib/alias-profile.functions";
 import { SubdomainPanel } from "@/components/dashboard/SubdomainPanel";
+import { WorkspaceDomainPanel } from "@/components/dashboard/WorkspaceDomainPanel";
 import { BadgesPanel } from "@/components/dashboard/BadgesPanel";
 import { BadgeActivityPanel } from "@/components/dashboard/BadgeActivityPanel";
 import { EmailForwardingPanel } from "@/components/dashboard/EmailForwardingPanel";
@@ -175,6 +176,8 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
   const alias = variant === "alias";
   const isWorkspace = variant === "workspace";
   const [wsCanvas, setWsCanvas] = useState<WorkspaceCanvas | null>(null);
+  /** Geclaimd bedrijfsdomein van de workspace (rout.be/<domein>) + DNS-status. */
+  const [wsDomain, setWsDomain] = useState<{ name: string; verified: boolean } | null>(null);
   const loadPersonal = useServerFn(alias ? getAliasProfile : getStudioProfile);
   const loadWorkspace = useServerFn(getWorkspaceStudioProfile);
   const loadProfileEditor = useCallback(
@@ -336,6 +339,24 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
           setBlocks(Array.isArray(data.blocks) ? (data.blocks as unknown as ProfileBlock[]) : []);
           setDraftRevision(data.draftRevision ?? 0);
           setPublishedRevision(data.publishedRevision ?? 0);
+          if (isWorkspace) {
+            // Het workspace-canvas: zonder deze feiten zou elke sectie-save of
+            // publicatie een leeg workspaceId sturen.
+            const ws = data as Partial<{
+              workspaceId: string; workspaceName: string; workspaceSlug: string;
+              role: string; canEdit: boolean; proPlan: boolean;
+              domain: string | null; domainVerified: boolean;
+            }>;
+            setWsCanvas({
+              workspaceId: ws.workspaceId ?? "",
+              name: ws.workspaceName ?? "",
+              slug: ws.workspaceSlug ?? "",
+              role: ws.role ?? "member",
+              canEdit: Boolean(ws.canEdit),
+              proPlan: Boolean(ws.proPlan),
+            });
+            setWsDomain(ws.domain ? { name: ws.domain, verified: Boolean(ws.domainVerified) } : null);
+          }
         } else if (alias) {
           // The Privacy Alias starts blank: never seed it with the account's
           // real name, email or avatar — that would link it to the member.
@@ -452,10 +473,18 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
     // De URL-balk hoort bij het profiel dat je nú bewerkt.
     prefer: alias ? "alias" : "root",
   });
-  const publicPath = live.path ?? styledProfilePath(claimed ?? "", urlStyle);
+  // Workspace-URL: het geverifieerde bedrijfsdomein (rout.be/<domein>) wint,
+  // anders de vaste workspace-slug. Één bron van waarheid, nooit lokale state.
+  const publicPath = isWorkspace
+    ? wsDomain?.verified
+      ? `/${wsDomain.name}`
+      : `/w/${wsCanvas?.slug ?? workspaceSlug ?? ""}`
+    : (live.path ?? styledProfilePath(claimed ?? "", urlStyle));
   useEffect(() => { onPagesChange?.({ tipEnabled: !alias && verified && tipEnabled, handle: normalized }); }, [alias, verified, tipEnabled, normalized, onPagesChange]);
 
-  const visibleTabs = useMemo(() => TABS.filter((t) => !t.verifiedOnly || verified), [verified]);
+  // De "Domains & Bluesky"-tab is verified-only voor personen; een workspace
+  // krijgt hem altijd: domeinclaim (rout.be/<domein>) is háár verificatie.
+  const visibleTabs = useMemo(() => TABS.filter((t) => !t.verifiedOnly || verified || isWorkspace), [verified, isWorkspace]);
   // Losing verification (or loading it late) must never leave the studio on a
   // tab that is no longer rendered — that would show an empty pane.
   useEffect(() => {
@@ -463,8 +492,9 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
   }, [visibleTabs, tab]);
 
   // Debounced real-time handle availability check against the profiles table.
+  // Een workspace-username ís de slug (vast); er valt niets te checken.
   useEffect(() => {
-    if (!normalized || !handleOk) {
+    if (isWorkspace || !normalized || !handleOk) {
       setAvailability("idle");
       return;
     }
@@ -1543,21 +1573,47 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                   <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-lg font-medium">
-                        {alias
-                          ? t("studio.editor.aliasTitle")
-                          : t("studio.editor.verifiedTitle")}
+                        {isWorkspace
+                          ? "Bedrijfsverificatie"
+                          : alias
+                            ? t("studio.editor.aliasTitle")
+                            : t("studio.editor.verifiedTitle")}
                       </h2>
                       {alias && (
                         <span className="rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                           {t("studio.editor.aliasLimit")}
                         </span>
                       )}
+                      {isWorkspace && verified && (
+                        <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                          Geverifieerd bedrijf
+                        </span>
+                      )}
                     </div>
                     <p id="handle-help" className="mt-1 text-xs text-muted-foreground">
-                      {alias
-                        ? t("studio.editor.aliasHint")
-                        : handleRuleHint(handleCtx)}
+                      {isWorkspace
+                        ? "De workspace-naam is de vaste slug. Claim je bedrijfsdomein op het tabblad Domains om rout.be/<julliedomein> te krijgen — dat is de verificatie van jullie organisatie."
+                        : alias
+                          ? t("studio.editor.aliasHint")
+                          : handleRuleHint(handleCtx)}
                     </p>
+                    {isWorkspace ? (
+                      // De workspace-username ís de slug: vast, geen vrije invoer.
+                      // Het live adres volgt het geverifieerde domein of /w/<slug>.
+                      <div className="mt-3 space-y-2">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="shrink-0 font-mono text-sm text-muted-foreground">{host}/w/</span>
+                          <span className="min-w-0 flex-1 truncate rounded-xl border border-border bg-muted/40 px-3 py-2.5 font-mono text-sm">
+                            {wsCanvas?.slug ?? workspaceSlug}
+                          </span>
+                        </div>
+                        <p className="break-all text-xs text-muted-foreground">
+                          Live adres: <span className="font-mono text-foreground">{host}{publicPath}</span>
+                          {wsDomain && !wsDomain.verified && " — domein nog niet geverifieerd (zie tabblad Domains)."}
+                        </p>
+                      </div>
+                    ) : (
+                    <>
                     <div className="mt-3 flex min-w-0 items-center gap-2">
                       <span className="shrink-0 font-mono text-sm text-muted-foreground">
                         {host}
@@ -1622,11 +1678,14 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                         />
                       </div>
                     )}
+                    </>
+                    )}
                   </section>
 
                   {/* Gratis accounts hebben maar één publieke ruimte: de keuze
-                      staat al bovenaan bij de profielkiezer, dus hier weg. */}
-                  {verified && (
+                      staat al bovenaan bij de profielkiezer, dus hier weg.
+                      Persoonsgebonden (alias vs. wettelijke naam): nooit voor workspaces. */}
+                  {verified && !isWorkspace && (
                   <section className="space-y-4 rounded-2xl border border-border bg-card p-4 sm:p-5">
                     <div>
                       <h2 className="text-lg font-medium">{t("studio.editor.identityBadge")}</h2>
@@ -1912,7 +1971,15 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
             </Accordion>
           )}
 
-          {tab === "identity" && verified && (
+          {tab === "identity" && (verified || isWorkspace) && (
+            isWorkspace ? (
+              // Workspace-verificatie = het bedrijfsdomein (rout.be/<domein>),
+              // geen persoonlijke eID. Subdomein/Bluesky zijn persoonsgebonden.
+              <WorkspaceDomainPanel
+                workspaceId={wsCanvas?.workspaceId ?? ""}
+                onVerified={() => setLoadAttempt((n) => n + 1)}
+              />
+            ) : (
             <Accordion type="single" collapsible className="space-y-3">
               <AccordionItem
                 value="subdomain_settings"
@@ -1941,6 +2008,7 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+            )
           )}
         </div>
 

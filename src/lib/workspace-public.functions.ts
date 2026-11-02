@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { readHub, type WorkspaceHub } from "./workspace-hub";
+import { readPublishedStudio, workspaceStudioIsPublic, type WorkspaceStudioPayload } from "./workspace-studio";
 
 export type PublicWorkspace = {
   name: string;
@@ -8,9 +9,12 @@ export type PublicWorkspace = {
   avatarUrl: string | null;
   description: string | null;
   domain: string | null;
+  domainVerified: boolean;
   profileHandle: string | null;
   /** Published hub content, or null when the workspace has not published its Profile Hub. */
   hub: WorkspaceHub | null;
+  /** Published Studio page (same engine as personal profiles); wins over the legacy hub. */
+  studio: WorkspaceStudioPayload | null;
 };
 
 /** Public card for rout.be/w/<slug>. A definer helper returns only non-private fields (never billing data). */
@@ -22,14 +26,18 @@ export const getPublicWorkspace = createServerFn({ method: "GET" })
     const { hasDatabase, sql } = await import("@/lib/neon");
     if (!hasDatabase()) return null;
     const rows = (await sql`select * from public.rout_public_workspace(${data.slug})`) as {
-      name: string; slug: string; avatar_url: string | null; description: string | null; domain: string | null; profile_handle: string | null; public_profile: unknown;
+      name: string; slug: string; avatar_url: string | null; description: string | null; domain: string | null; domain_verified_at: string | null; profile_handle: string | null; public_profile: unknown;
     }[];
     const r = rows[0];
     if (!r) return null;
     const hub = readHub(r.public_profile);
+    const studioRaw = readPublishedStudio(r.public_profile);
+    // De publiek/privé-schakelaar van de Studio geldt ook voor de openbare route.
+    const studio = studioRaw && workspaceStudioIsPublic(studioRaw) ? studioRaw : null;
     return {
       name: r.name, slug: r.slug, avatarUrl: r.avatar_url, description: r.description, domain: r.domain,
-      profileHandle: r.profile_handle, hub: hub.published ? hub : null,
+      domainVerified: Boolean(r.domain_verified_at),
+      profileHandle: r.profile_handle, hub: hub.published ? hub : null, studio,
     };
   });
 
