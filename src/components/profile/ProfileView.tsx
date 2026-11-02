@@ -486,18 +486,21 @@ export function ProfileView({
           />
         )}
         {/* Gratis leden tonen hun alias-namespace, Pro-leden hun schone handle.
-            De subtitel is een subtiele link naar het live profiel. */}
-        <a
-          href={
-            free ? `https://rout.be/u/${profile.username}` : `https://rout.be/${profile.username}`
-          }
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-1 break-all text-center text-sm underline-offset-4 transition-opacity hover:underline hover:opacity-80"
-          style={{ color: t.muted }}
-        >
-          {free ? `rout.be/u/${profile.username}` : `rout.be/${profile.username}`}
-        </a>
+            De subtitel is een subtiele link naar het live profiel. Een workspace
+            heeft bewust géén username (username: null) — dan valt deze regel weg. */}
+        {profile.username && (
+          <a
+            href={
+              free ? `https://rout.be/u/${profile.username}` : `https://rout.be/${profile.username}`
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 break-all text-center text-sm underline-offset-4 transition-opacity hover:underline hover:opacity-80"
+            style={{ color: t.muted }}
+          >
+            {free ? `rout.be/u/${profile.username}` : `rout.be/${profile.username}`}
+          </a>
+        )}
         {prefs.locationVisible && prefs.locationBadge && (
           <span
             className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium"
