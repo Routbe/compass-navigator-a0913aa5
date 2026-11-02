@@ -1683,8 +1683,9 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                   </section>
 
                   {/* Gratis accounts hebben maar één publieke ruimte: de keuze
-                      staat al bovenaan bij de profielkiezer, dus hier weg. */}
-                  {verified && (
+                      staat al bovenaan bij de profielkiezer, dus hier weg.
+                      Persoonsgebonden (alias vs. wettelijke naam): nooit voor workspaces. */}
+                  {verified && !isWorkspace && (
                   <section className="space-y-4 rounded-2xl border border-border bg-card p-4 sm:p-5">
                     <div>
                       <h2 className="text-lg font-medium">{t("studio.editor.identityBadge")}</h2>
