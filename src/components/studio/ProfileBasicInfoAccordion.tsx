@@ -45,7 +45,7 @@ const EMOJI_QUICK_PICK = [
 ];
 
 interface Props {
-  variant?: "verified" | "alias";
+  variant?: "verified" | "alias" | "workspace";
   displayName: string;
   onDisplayNameChange: (value: string) => void;
   tagline: string;

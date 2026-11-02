@@ -8,6 +8,11 @@ import { GuestbookAccordion } from "@/components/studio/GuestbookAccordion";
 import { QuestionsInboxAccordion } from "@/components/studio/QuestionsInboxAccordion";
 import { StudioSectionIcon } from "@/components/studio/StudioSectionIcon";
 import { getMyTipSetup } from "@/lib/tip-page.functions";
+import {
+  getWorkspaceStudioProfile,
+  publishWorkspaceProfile,
+  discardWorkspaceStudioDraft,
+} from "@/lib/workspace-studio.functions";
 import { QrCode } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
