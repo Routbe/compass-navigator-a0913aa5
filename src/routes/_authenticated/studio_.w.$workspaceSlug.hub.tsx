@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowDown, ArrowUp, ExternalLink, Loader2, Play, Plus, Settings, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, Plus, Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { DocHelpLink } from "@/components/seo/DocHelpLink";
 import { WorkspaceHubView } from "@/components/workspace/WorkspaceHubView";
 import { activateScopeFromUrl, getWorkspaceHub, saveWorkspaceHub } from "@/lib/workspaces.functions";
-import { getWorkspaceVoiceSettings, speakWorkspaceVoice } from "@/lib/workspace-voice.functions";
-import { HUB_LIMITS, hubLinkSchema, type WorkspaceHub } from "@/lib/workspace-hub";
+import { HUB_LIMITS, hubAudioSchema, hubLinkSchema, type WorkspaceHub } from "@/lib/workspace-hub";
 import { ROLE_LABELS } from "@/lib/workspace-rules";
 
 export const Route = createFileRoute("/_authenticated/studio_/w/$workspaceSlug/hub")({
@@ -142,13 +141,11 @@ function WorkspaceHubPage() {
             <Textarea aria-label="Over de workspace" placeholder="Wie zijn jullie en wat doen jullie?" rows={4} maxLength={HUB_LIMITS.bio} value={hub.bio} disabled={!edit} onChange={(e) => setHub({ ...hub, bio: e.target.value })} />
           </section>
 
-          <VoiceIntroSection
-            workspaceId={ws.workspaceId}
+          <AudioBlockSection
             slug={ws.slug}
             edit={edit}
-            busy={busy}
-            text={hub.voiceIntro}
-            onChange={(voiceIntro) => setHub({ ...hub, voiceIntro })}
+            audio={hub.audio}
+            onChange={(audio) => setHub({ ...hub, audio })}
           />
 
           <section className={card}>
