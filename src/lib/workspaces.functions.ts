@@ -4,7 +4,6 @@ import { requireAuth } from "@/lib/auth/middleware";
 import { WORKSPACE_ROLES, checkMemberChange, canManageTeam, canAssignRole, type WorkspaceRole } from "./workspace-rules";
 import { unavailableWorkspaceContext } from "./workspace-availability";
 import { workspaceBillingSchema } from "./workspace-pricing";
-import { workspaceHubSchema, type WorkspaceHub } from "./workspace-hub";
 
 const roleSchema = z.enum(WORKSPACE_ROLES);
 const uuid = z.string().uuid();
