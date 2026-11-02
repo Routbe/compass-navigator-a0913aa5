@@ -1597,6 +1597,23 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                           ? t("studio.editor.aliasHint")
                           : handleRuleHint(handleCtx)}
                     </p>
+                    {isWorkspace ? (
+                      // De workspace-username ís de slug: vast, geen vrije invoer.
+                      // Het live adres volgt het geverifieerde domein of /w/<slug>.
+                      <div className="mt-3 space-y-2">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="shrink-0 font-mono text-sm text-muted-foreground">{host}/w/</span>
+                          <span className="min-w-0 flex-1 truncate rounded-xl border border-border bg-muted/40 px-3 py-2.5 font-mono text-sm">
+                            {wsCanvas?.slug ?? workspaceSlug}
+                          </span>
+                        </div>
+                        <p className="break-all text-xs text-muted-foreground">
+                          Live adres: <span className="font-mono text-foreground">{host}{publicPath}</span>
+                          {wsDomain && !wsDomain.verified && " — domein nog niet geverifieerd (zie tabblad Domains)."}
+                        </p>
+                      </div>
+                    ) : (
+                    <>
                     <div className="mt-3 flex min-w-0 items-center gap-2">
                       <span className="shrink-0 font-mono text-sm text-muted-foreground">
                         {host}
@@ -1660,6 +1677,8 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                           onSelect={(next) => setHandle(next)}
                         />
                       </div>
+                    )}
+                    </>
                     )}
                   </section>
 
