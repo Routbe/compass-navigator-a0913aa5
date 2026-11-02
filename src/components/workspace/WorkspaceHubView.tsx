@@ -1,7 +1,8 @@
 import { Building2, ExternalLink } from "lucide-react";
 import { profileImageSrc } from "@/lib/image-proxy-rules";
 import type { WorkspaceHub } from "@/lib/workspace-hub";
-import { VoiceIntroPlayer } from "./VoiceIntroPlayer";
+import { serializeAudioBlockConfig } from "@/lib/audio-block";
+import { AudioBlockCard } from "@/components/profile/AudioBlockCard";
 
 type Props = {
   name: string;
@@ -28,7 +29,11 @@ export function WorkspaceHubView({ name, slug, avatarUrl, hub, children }: Props
       <p className="mt-1 text-sm text-muted-foreground">rout.be/w/{slug}</p>
       {hub?.tagline && <p className="mt-3 text-base">{hub.tagline}</p>}
       {hub?.bio && <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">{hub.bio}</p>}
-      {hub?.voiceIntro && <VoiceIntroPlayer slug={slug} />}
+      {hub?.audio && (
+        <div className="mt-5 text-left">
+          <AudioBlockCard value={serializeAudioBlockConfig({ url: hub.audio.url, caption: hub.audio.title, transcript: hub.audio.caption })} />
+        </div>
+      )}
       {hub && hub.links.length > 0 && (
         <ul className="mt-6 flex flex-col gap-2">
           {hub.links.map((l, i) => (
