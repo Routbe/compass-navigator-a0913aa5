@@ -13,6 +13,7 @@ import {
   type WorkspaceSettings as WsSettings,
 } from "@/lib/workspaces.functions";
 import { getActiveScopeStorage } from "@/lib/assets.functions";
+import { getWorkspaceVoiceSettings, saveWorkspaceVoiceSettings } from "@/lib/workspace-voice.functions";
 import { canManageTeam } from "@/lib/workspace-rules";
 
 export const Route = createFileRoute("/_authenticated/studio_/w/$workspaceSlug/settings")({
@@ -107,6 +108,7 @@ function WorkspaceSettingsPage() {
         </div>
       </section>
 
+      {manage && <VoiceCard ws={ws} />}
       {manage && <DomainCard ws={ws} onDone={refresh} />}
       {ws.role === "owner" && <DangerZone ws={ws} />}
     </main>
@@ -204,6 +206,58 @@ function AddressCard({ ws, onDone }: { ws: WsSettings; onDone: () => void }) {
           )}
         </>
       )}
+    </section>
+  );
+}
+
+function VoiceCard({ ws }: { ws: WsSettings }) {
+  const getSettings = useServerFn(getWorkspaceVoiceSettings);
+  const saveSettings = useServerFn(saveWorkspaceVoiceSettings);
+  const q = useQuery({ queryKey: ["workspace-voice", ws.id], queryFn: () => getSettings({ data: { workspaceId: ws.id } }) });
+  const [apiKey, setApiKey] = useState("");
+  const [voiceId, setVoiceId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const qc = useQueryClient();
+  const currentVoice = voiceId ?? q.data?.defaultVoiceId ?? "";
+  async function save(clearApiKey = false) {
+    setBusy(true);
+    try {
+      await saveSettings({
+        data: {
+          workspaceId: ws.id,
+          ...(apiKey.trim() ? { apiKey: apiKey.trim() } : {}),
+          defaultVoiceId: currentVoice.trim() ? currentVoice.trim() : null,
+          ...(clearApiKey ? { clearApiKey: true } : {}),
+        },
+      });
+      setApiKey("");
+      toast.success(clearApiKey ? "ElevenLabs-sleutel verwijderd" : "Audio & Voice-instellingen opgeslagen");
+      void qc.invalidateQueries({ queryKey: ["workspace-voice", ws.id] });
+    } catch (e) { toast.error(errText(e)); } finally { setBusy(false); }
+  }
+  return (
+    <section className={card}>
+      <h2 className="font-medium">Audio &amp; Voice (ElevenLabs)</h2>
+      <p className="text-sm text-muted-foreground">
+        Koppel een ElevenLabs-sleutel en Voice ID (bijv. je gekloonde stem) aan deze workspace. Externe apps met
+        "Login met ROUT" kunnen dan via <code className="text-xs">/api/workspace/voice</code> spraak genereren.
+        De sleutel wordt versleuteld opgeslagen en is daarna nooit meer uitleesbaar.
+      </p>
+      <p className="text-sm">
+        Status: {q.data?.configured ? <span className="text-accent">Sleutel gekoppeld</span> : <span className="text-muted-foreground">Geen sleutel gekoppeld</span>}
+      </p>
+      <label className="block space-y-1 text-sm">
+        <span>API-sleutel {q.data?.configured ? "(leeg laten om te behouden)" : ""}</span>
+        <Input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder={q.data?.configured ? "••••••••" : "ElevenLabs API key"} aria-label="ElevenLabs API-sleutel" autoComplete="off" />
+      </label>
+      <label className="block space-y-1 text-sm">
+        <span>Standaard Voice ID</span>
+        <Input value={currentVoice} onChange={(e) => setVoiceId(e.target.value)} placeholder="bijv. CwhRBWXzGAHq8TQ4Fs17" aria-label="Standaard Voice ID" />
+      </label>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => void save()} disabled={busy || (!apiKey.trim() && !q.data?.configured && !currentVoice.trim())}>Opslaan</Button>
+        {q.data?.configured && <Button variant="outline" onClick={() => void save(true)} disabled={busy}>Sleutel verwijderen</Button>}
+      </div>
     </section>
   );
 }

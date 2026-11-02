@@ -66,5 +66,11 @@
 - [ ] Agent rollbacks: previous_state snapshot only for Agent/Bot mutations (none for humans) + POST /api/audit/revert/{log_id}
 - [ ] Outbound agent webhooks: agent_webhook_url, signed events (workspace.upgraded, domain.verified)
 
+## ElevenLabs Audio & Voice (Nov 2026)
+- [x] 0165 applied live: workspace_voice_settings (sealed key + default Voice ID, RLS owner/admin only)
+- [x] Workspace settings → "Audio & Voice (ElevenLabs)" card: write-only key field, Voice ID, remove key
+- [x] POST /api/workspace/voice: agent token (assets:write) + workspace membership, streams MP3, key opened only in memory
+- [x] Tests (10) + tsgo exit 0
+
 ## Workspace Studio parity (after agent phase 1)
 - [ ] Workspace Studio (/studio/w/<slug>/hub) uses the same Studio engine as the personal Studio (all tabs, design, block types, QR, advanced settings), loading/saving by workspace_id
