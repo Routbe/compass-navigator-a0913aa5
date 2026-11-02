@@ -475,7 +475,9 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
   const publicPath = live.path ?? styledProfilePath(claimed ?? "", urlStyle);
   useEffect(() => { onPagesChange?.({ tipEnabled: !alias && verified && tipEnabled, handle: normalized }); }, [alias, verified, tipEnabled, normalized, onPagesChange]);
 
-  const visibleTabs = useMemo(() => TABS.filter((t) => !t.verifiedOnly || verified), [verified]);
+  // De "Domains & Bluesky"-tab is verified-only voor personen; een workspace
+  // krijgt hem altijd: domeinclaim (rout.be/<domein>) is háár verificatie.
+  const visibleTabs = useMemo(() => TABS.filter((t) => !t.verifiedOnly || verified || isWorkspace), [verified, isWorkspace]);
   // Losing verification (or loading it late) must never leave the studio on a
   // tab that is no longer rendered — that would show an empty pane.
   useEffect(() => {
@@ -483,8 +485,9 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
   }, [visibleTabs, tab]);
 
   // Debounced real-time handle availability check against the profiles table.
+  // Een workspace-username ís de slug (vast); er valt niets te checken.
   useEffect(() => {
-    if (!normalized || !handleOk) {
+    if (isWorkspace || !normalized || !handleOk) {
       setAvailability("idle");
       return;
     }
