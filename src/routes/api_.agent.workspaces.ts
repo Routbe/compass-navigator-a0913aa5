@@ -31,6 +31,16 @@ export const Route = createFileRoute("/api_/agent/workspaces")({
             slug: parsed.data.slug,
             description: parsed.data.description,
           });
+          const { recordAgentMutation } = await import("@/lib/agent/chronos.server");
+          await recordAgentMutation({
+            workspaceId: ws.workspaceId,
+            userId: agent.userId,
+            clientId: agent.clientId,
+            action: "workspace.provision",
+            targetTable: "workspaces",
+            targetId: ws.workspaceId,
+            newState: { name: parsed.data.name, slug: ws.slug },
+          });
           return agentOk(
             {
               workspace_id: ws.workspaceId,

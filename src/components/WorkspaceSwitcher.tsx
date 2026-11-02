@@ -88,7 +88,7 @@ export function WorkspaceSwitcher({ alwaysShow = false }: { alwaysShow?: boolean
         <span className="truncate">{active ? active.name : t("workspace.personal")}</span>
         <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-64">
+      <DropdownMenuContent align="start" collisionPadding={16} className="max-h-[70vh] w-[calc(100vw-2rem)] max-w-64 overflow-y-auto">
         <DropdownMenuItem onClick={() => switchTo(null)}>
           <User className="mr-2 h-4 w-4" /> {t("workspace.personal")}
           {!active && <Check className="ml-auto h-4 w-4" />}
