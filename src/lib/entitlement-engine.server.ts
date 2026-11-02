@@ -63,6 +63,9 @@ export async function redeemPlusWorkspace(userId: string, workspaceId: string): 
   await sql`insert into public.entitlement_overrides (scope_type, scope_id, entitlement_key, value, granted_by)
     values ('workspace', ${workspaceId}, ${ENTITLEMENT_KEYS.WORKSPACE_PLAN}, 'plus', ${`user:${userId}`})
     on conflict (scope_type, scope_id, entitlement_key) do update set value = 'plus'`;
+  // Chronos: agents waiting on a 402 resume automatically.
+  const { emitAgentWebhook } = await import("./agent/chronos.server");
+  await emitAgentWebhook(workspaceId, "workspace.upgraded");
   return { ok: true };
 }
 

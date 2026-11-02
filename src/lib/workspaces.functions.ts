@@ -413,7 +413,12 @@ export const verifyWorkspaceDomain = createServerFn({ method: "POST" })
     const expected = await claimRecordValue(workspaceDomainKey(), data.workspaceId, row.domain);
     const records = await query(claimRecordName(row.domain), "TXT");
     const ok = records.some((r) => r.replace(/"\s*"/g, "") === expected);
-    if (ok) await sql`update public.workspaces set domain_verified_at = now() where id = ${data.workspaceId}`;
+    if (ok) {
+      await sql`update public.workspaces set domain_verified_at = now() where id = ${data.workspaceId}`;
+      // Chronos: agents waiting on DNS verification resume automatically.
+      const { emitAgentWebhook } = await import("./agent/chronos.server");
+      await emitAgentWebhook(data.workspaceId, "domain.verified");
+    }
     return { verified: ok };
   });
 
